@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import io from "socket.io-client";
+import { HostListener } from '@angular/core';
 
 @Component({
     selector: 'app-root',
@@ -8,6 +9,14 @@ import io from "socket.io-client";
 })
 export class AppComponent implements OnInit {
     
+    @HostListener('document:keydown', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent) { 
+    console.log(event.key);
+    var keypress = this.readKey(event.key)
+    if(keypress != 'empty') this.move(keypress)
+    
+  }
+
     @ViewChild("game", {static: false})
     private gameCanvas: ElementRef;
 
@@ -28,5 +37,20 @@ export class AppComponent implements OnInit {
   public move(direction: string) {
     this.socket.emit("move", direction);
 }
+
+  public readKey(value: string){
+      switch(value){
+          case('ArrowRight'):
+            return 'right';
+        case('ArrowUp'):
+        return 'up';
+        case('ArrowLeft'):
+        return 'left';
+        case('ArrowDown'):
+        return 'down';
+        default:
+            return 'empty';
+      }
+  }
 
 }
