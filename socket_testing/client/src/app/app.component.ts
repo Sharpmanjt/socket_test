@@ -32,7 +32,27 @@ export class AppComponent implements OnInit {
           this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
           this.context.fillRect(data.x, data.y, 20, 20);
       });
+
+      this.socket.on("shoot", data =>{
+        var shot = {'x': data.x, 'y': data.y-5}
+        var ctx = this.context;
+        var canvas = this.gameCanvas
+        for (var x = 0; x < 10; x++)
+        {
+            setTimeout(function(){
+            ctx.clearRect(0, 0, canvas.nativeElement.width, canvas.nativeElement.height);
+            ctx.fillStyle ='blue'
+            ctx.fillRect(shot['x'], shot['y'], 10, 10)
+            shot['y'] -= 5
+            ctx.fillStyle = 'black'
+            ctx.fillRect(data.x, data.y, 20, 20);
+            }, 2000);
+        }
+        
+        
+    })
   }
+
 
   public move(direction: string) {
     this.socket.emit("move", direction);
@@ -40,14 +60,17 @@ export class AppComponent implements OnInit {
 
   public readKey(value: string){
       switch(value){
-          case('ArrowRight'):
+        case('ArrowRight'):
             return 'right';
         case('ArrowUp'):
-        return 'up';
+                return 'up';
         case('ArrowLeft'):
-        return 'left';
+                return 'left';
         case('ArrowDown'):
-        return 'down';
+            return 'down';
+        case 'p':
+            this.socket.emit("shoot", 'x')
+            break;
         default:
             return 'empty';
       }
