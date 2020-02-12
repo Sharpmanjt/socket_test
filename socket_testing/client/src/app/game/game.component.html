@@ -1,0 +1,31 @@
+<mat-grid-list cols="5" rowHeight="600px">
+    <mat-grid-tile [colspan]="2" [rowspan]="1">
+        <div class="game-tile">
+            <mat-toolbar class="game-toolbar">
+                <p>SCORE</p>
+                <p class="score">1250</p>
+            </mat-toolbar>
+            <canvas #game width="540" height="492" style="border: 1px solid black"></canvas>
+            <p class="buttons">
+                <button mat-raised-button (click)="move('right')">Right</button>
+                <button mat-raised-button (click)="move('left')">Left</button>
+                <button mat-raised-button (click)="move('up')">Up</button>
+                <button mat-raised-button (click)="move('down')">Down</button>
+            </p>
+        </div>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <div class="chat-tile">
+            <mat-toolbar class="chat-toolbar"><p>CHAT</p></mat-toolbar>
+        </div>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="2" [rowspan]="1">
+        <div class="game-tile">
+            <mat-toolbar class="game-toolbar">
+                <p>SCORE</p>
+                <p class="score">1000</p>
+            </mat-toolbar>
+            <canvas width="540" height="492" style="border: 1px solid black"></canvas>
+        </div>
+    </mat-grid-tile>
+</mat-grid-list>
