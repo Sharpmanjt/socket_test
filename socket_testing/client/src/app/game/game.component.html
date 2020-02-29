@@ -15,9 +15,17 @@
         </div>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="1" [rowspan]="1">
-        <div class="chat-tile">
+        <app-chat></app-chat>
+        <!-- <div class="chat-tile">
             <mat-toolbar class="chat-toolbar"><p>CHAT</p></mat-toolbar>
-        </div>
+            <section id="room">
+                <section id="feedback"></section>
+            </section>
+            <div>
+                <input id="message" type="text"/>
+                <button id="send_message" type="button">Send</button>
+            </div>
+        </div> -->
     </mat-grid-tile>
     <mat-grid-tile [colspan]="2" [rowspan]="1">
         <div class="game-tile">

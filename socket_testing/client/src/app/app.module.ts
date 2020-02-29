@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MenuComponent } from './menu/menu.component';
 import { GameComponent } from './game/game.component';
+import { ChatComponent } from './chat/chat.component';
 
 import { 
   MatToolbarModule,
@@ -18,7 +19,8 @@ import {
   declarations: [
     AppComponent,
     MenuComponent,
-    GameComponent
+    GameComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,
