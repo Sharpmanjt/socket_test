@@ -1,1 +1,53 @@
-@import "../../styles.css";
+.buttons {
+    text-align: center;
+    margin-top: 5px;
+}
+
+canvas {
+    background-color: black;
+}
+
+button {
+    margin: 1.5px
+}
+
+.game-tile {
+    padding: 20px 10px 10px 10px;
+}
+
+.game-tile, .chat-tile {
+    position: absolute;
+    top: 0;
+}
+
+.chat-tile {
+    background-color: #119822;
+    padding: 0px;
+    margin-top: 20px;
+    width: 300px;
+    height: 532px;
+}
+
+.chat-toolbar, .game-toolbar {
+    font-size: 20px;
+    text-align: center;
+    height: 40px;
+    font-family: 'Coda Caption', sans-serif;
+}
+
+.score {
+    color: red;
+}
+.invader-img{
+    height: 2px;
+    width:2px;
+}
+
+.spacecraft{
+    position: absolute;
+    -webkit-transition: all 3.5s ease-in-out;
+    -moz-transition: all 3.5s ease-in-out;
+    -ms-transition: all 3.5s ease-in-out;
+    -o-transition: all 3.5s ease-in-out;
+    transition: all 3.5s ease-in-out;
+}
