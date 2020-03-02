@@ -38,3 +38,16 @@ button {
 .score {
     color: red;
 }
+.invader-img{
+    height: 2px;
+    width:2px;
+}
+
+.spacecraft{
+    position: absolute;
+    -webkit-transition: all 3.5s ease-in-out;
+    -moz-transition: all 3.5s ease-in-out;
+    -ms-transition: all 3.5s ease-in-out;
+    -o-transition: all 3.5s ease-in-out;
+    transition: all 3.5s ease-in-out;
+}

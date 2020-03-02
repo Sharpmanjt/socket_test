@@ -5,13 +5,16 @@
                 <p>SCORE</p>
                 <p class="score">1250</p>
             </mat-toolbar>
-            <canvas #game width="540" height="492" style="border: 1px solid black"></canvas>
+            <canvas #game id="canvas_1" width="540" height="492" style="border: 1px solid black">
+                <!--<img class="invader" *ngFor="let invader of Enemies_1" src="../../assets/img/invader.png" height="30px" width="30px">-->
+            </canvas>
             <p class="buttons">
                 <button mat-raised-button (click)="move('right')">Right</button>
                 <button mat-raised-button (click)="move('left')">Left</button>
                 <button mat-raised-button (click)="move('up')">Up</button>
                 <button mat-raised-button (click)="move('down')">Down</button>
             </p>
+            
         </div>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="1" [rowspan]="1">

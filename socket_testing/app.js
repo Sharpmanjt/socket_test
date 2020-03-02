@@ -14,6 +14,7 @@ var position = {
 Socketio.on("connection", socket => {
     socket.emit("position", position);
     socket.on("move", data => {
+        console.log("Listening move")
         switch(data) {
             case "left":
                 position.x -= 5;
