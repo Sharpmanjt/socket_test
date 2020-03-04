@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import io from "socket.io-client";
 import { HostListener } from '@angular/core';
 import { Enemy } from '../classes/Enemy';
+import {Player} from '../classes/Player';
 
 @Component({
     selector: 'app-game',
@@ -20,10 +21,13 @@ export class GameComponent implements OnInit {
 
     @ViewChild("game", {static: false})
     private gameCanvas: ElementRef;
-
+    private p1Score: Number = 0;
+    private p2Score: Number = 0;
     private context: any;
     private socket: any;
-
+    private winner: Player;
+    private player1: Player;
+    private player2: Player;
     private Enemies_1 : Enemy[] = [] //Enemies at the left screen
     private Enemies_2 : Enemy[] = [] //Enemies at the right screen
 
@@ -38,10 +42,17 @@ export class GameComponent implements OnInit {
       this.context = this.gameCanvas.nativeElement.getContext("2d");
       this.socket.on("position", data => {
           this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-          this.context.fillStyle='white';
-          this.context.fillRect(data.x, data.y, 20, 20);
-      });
+          
+          let space_img = document.createElement("img");
+          space_img.src = "../../assets/img/spaceship.png";
+          space_img.id = "spacecraft";
+          this.context.drawImage(space_img, data.x, data.y, 35, 40)
 
+        
+          /*space_img.onload = function(){
+          this.context.drawImage(space_img, 230, 400, 35, 40);
+      });*/
+    })
       this.socket.on("shoot", data =>{
         var shot = {'x': data.x, 'y': data.y-5}
         var ctx = this.context;
@@ -62,6 +73,46 @@ export class GameComponent implements OnInit {
     })
   }
 
+  public destroyEnemy(//player1, player2
+  ){
+    /*player.score += 10
+    //if player1.score >= 500{
+        winner = player1
+    }
+    else if player2.score >=500{
+        winner = player2
+    }
+
+
+    */
+  }
+
+  public enemyPass(//player
+  ){
+      //if an enemy passes your ship and goes off screen
+
+
+      /*
+      if((player.score -10) < 0){ player.score = 0}
+      else {player.score -=10}
+      */
+  }
+
+  public shipCollision(//player, invader
+  ){
+    /*
+    if player and invader collide
+
+    if (player.position_x == invader.position_x && player.position_y == invader.position_y){
+        if(player == player1){
+            winner = player2
+        }
+        else if(player == player2){
+            winner = player1
+        }
+    }
+    */
+  }
 
   public move(direction: string) {
     this.socket.emit("move", direction);
@@ -124,7 +175,7 @@ export class GameComponent implements OnInit {
             ctx.drawImage(img, 25+85 * i, pos_y, 35,40);
         }
         let space_img = document.createElement("img");
-        space_img.src = "../../assets/img/spacecraft.jpg";
+        space_img.src = "../../assets/img/spaceship.png";
         space_img.id = "spacecraft";
         space_img.onload = function(){
             ctx.drawImage(space_img, 230, 400, 35, 40);
