@@ -23,6 +23,7 @@ export class GameComponent implements OnInit {
     private gameCanvas: ElementRef;
     private p1Score: Number = 0;
     private p2Score: Number = 0;
+    private time: number = 180;
     private context: any;
     private socket: any;
     private winner: Player;
@@ -34,9 +35,18 @@ export class GameComponent implements OnInit {
     constructor(){
     }
 
+interval;
+
+startTimer() {
+  this.interval = setInterval(() => {
+    this.time -= 1;
+  },1000)
+}
+
     public ngOnInit() {
         this.socket = io("http://localhost:3000");
         this.positionInvaders();
+        this.startTimer()
     }
     public ngAfterViewInit() {
       this.context = this.gameCanvas.nativeElement.getContext("2d");
