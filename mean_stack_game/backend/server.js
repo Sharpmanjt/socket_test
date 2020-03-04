@@ -41,8 +41,8 @@ app.use(function (err, req, res, next) {
 var io = require("socket.io")(server);
 
 var position = {
-    x: 200,
-    y: 200
+    x: 230,
+    y: 400
 };
 
 io.on('connection', (socket) => {
