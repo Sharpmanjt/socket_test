@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../service/api.service';
-import { User } from 'src/model/user';
+import { User } from '../../model/user';
 import { MatTableDataSource } from '@angular/material';
 
 @Component({

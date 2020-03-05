@@ -94,6 +94,9 @@ var position = {
     y: 400
 };
 
+var oldposx
+var oldposy
+
 io.on('connection', (socket) => {
     /*** GENERAL ***/
     // default username
@@ -139,25 +142,28 @@ io.on('connection', (socket) => {
     // })
 
     /*** GAME ***/
-    socket.emit("position", position);
+    socket.emit("position", {position, oldposx, oldposy});
     socket.on("move", data => {
+        oldposx = position.x
+        oldposy = position.y
         switch(data) {
             case "left":
                 position.x -= 5;
-                io.emit("position", position);
+                io.emit("position", {position, oldposx, oldposy});
                 break;
             case "right":
                 position.x += 5;
-                io.emit("position", position);
+                io.emit("position", {position, oldposx, oldposy});
                 break;
             case "up":
                 position.y -= 5;
-                io.emit("position", position);
+                io.emit("position", {position, oldposx, oldposy});
                 break;
             case "down":
                 position.y += 5;
-                io.emit("position", position);
+                io.emit("position", {position, oldposx, oldposy});
                 break;
         }
     }); 
+    
 });

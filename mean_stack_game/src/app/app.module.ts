@@ -14,13 +14,10 @@ import {
   MatGridListModule,
   MatButtonModule,
   MatCardModule,
-<<<<<<< HEAD
-=======
   MatInputModule,
   MatFormFieldModule,
   MatTableModule,
   MatPaginatorModule
->>>>>>> 4b2f571867b969db91c83b902e88ed697698ced1
 } from '@angular/material';
 import { DashboardComponent } from './dashboard/dashboard.component';
 

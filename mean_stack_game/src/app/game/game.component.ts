@@ -62,12 +62,15 @@ startTimer() {
     public ngAfterViewInit() {
       this.context = this.gameCanvas.nativeElement.getContext("2d");
       this.socket.on("position", data => {
+          console.log(data.oldposx)
+          console.log(data.oldposy)
+          console.log(data.position)
           //this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-          this.context.clearRect(0, 240, 3000, 3000);
+          this.context.clearRect(data.oldposx, data.oldposy, 35, 40);
           let space_img = document.createElement("img");
           space_img.src = "../../assets/img/spaceship.png";
           space_img.id = "spacecraft";
-          this.context.drawImage(space_img, data.x, data.y, 35, 40)
+          this.context.drawImage(space_img, data.position.x, data.position.y, 35, 40)
 
         
           /*space_img.onload = function(){
