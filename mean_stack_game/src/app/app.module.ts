@@ -12,7 +12,7 @@ import {
   MatToolbarModule,
   MatGridListModule,
   MatButtonModule,
-  MatCardModule
+  MatCardModule,
 } from '@angular/material';
 
 @NgModule({

@@ -3,11 +3,22 @@ import io from "socket.io-client";
 import { HostListener } from '@angular/core';
 import { Enemy } from '../classes/Enemy';
 import {Player} from '../classes/Player';
+import {
+    trigger,
+    state,
+    style,
+    animate,
+    transition,
+    // ...
+  } from '@angular/animations';
 
 @Component({
     selector: 'app-game',
     templateUrl: './game.component.html',
-    styleUrls: ['./game.component.css']
+    styleUrls: ['./game.component.css'],
+    animations: [
+        // animation triggers go here
+      ]
 })
 export class GameComponent implements OnInit {
     
@@ -51,8 +62,8 @@ startTimer() {
     public ngAfterViewInit() {
       this.context = this.gameCanvas.nativeElement.getContext("2d");
       this.socket.on("position", data => {
-          this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-          
+          //this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+          this.context.clearRect(0, 240, 3000, 3000);
           let space_img = document.createElement("img");
           space_img.src = "../../assets/img/spaceship.png";
           space_img.id = "spacecraft";
