@@ -2,13 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 let historySchema = new Schema({
-    type: {
+    player: {
         type: String
     },
-    sender: {
-        type: String
-    },
-    receiver: {
+    opponent: {
         type: String
     },
     date: {
@@ -16,9 +13,12 @@ let historySchema = new Schema({
     },
     time: {
         type: Date
+    },
+    message: {
+        type: String
     }
 }, {
-    collection: 'events'
+    collection: 'history'
 })
 
 module.exports = mongoose.model('History', historySchema);

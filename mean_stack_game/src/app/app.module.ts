@@ -7,36 +7,52 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MenuComponent } from './menu/menu.component';
 import { GameComponent } from './game/game.component';
 import { ChatComponent } from './chat/chat.component';
+import { HttpModule } from '@angular/http';
 
 import { 
   MatToolbarModule,
   MatGridListModule,
   MatButtonModule,
-  MatCardModule
+  MatCardModule,
+  MatInputModule,
+  MatFormFieldModule,
+  MatTableModule,
+  MatPaginatorModule
 } from '@angular/material';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
     GameComponent,
-    ChatComponent
+    ChatComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
+    HttpModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatGridListModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatTableModule,
+    MatPaginatorModule
   ],
   exports: [
     MatToolbarModule,
     MatGridListModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatTableModule,
+    MatPaginatorModule
   ],
   providers: [],
   bootstrap: [AppComponent]
