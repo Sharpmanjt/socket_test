@@ -1,9 +1,19 @@
+<mat-grid-list cols="5" rowHeight="100px"> 
+    <mat-grid-tile [colspan]="2" [rowspan]="0"></mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+            <mat-toolbar class="game-toolbar">
+                <p>TIMER:</p>
+                <p class="score">{{time}}</p>
+            </mat-toolbar>
+        </mat-grid-tile> 
+</mat-grid-list>
+
 <mat-grid-list cols="5" rowHeight="600px">
     <mat-grid-tile [colspan]="2" [rowspan]="1">
         <div class="game-tile">
             <mat-toolbar class="game-toolbar">
                 <p>SCORE</p>
-                <p class="score">1250</p>
+                <p class="score">{{p1Score}}</p>
             </mat-toolbar>
             <canvas #game id="canvas_1" width="540" height="492" style="border: 1px solid black">
                 <!--<img class="invader" *ngFor="let invader of Enemies_1" src="../../assets/img/invader.png" height="30px" width="30px">-->
@@ -24,7 +34,7 @@
         <div class="game-tile">
             <mat-toolbar class="game-toolbar">
                 <p>SCORE</p>
-                <p class="score">1000</p>
+                <p class="score">{{p2Score}}</p>
             </mat-toolbar>
             <canvas width="540" height="492" style="border: 1px solid black"></canvas>
         </div>
