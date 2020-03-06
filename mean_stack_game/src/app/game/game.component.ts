@@ -11,6 +11,7 @@ import {
     transition,
     // ...
   } from '@angular/animations';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
     selector: 'app-game',
@@ -24,6 +25,7 @@ export class GameComponent implements OnInit {
     
     @HostListener('document:keydown', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent) { 
+        event.preventDefault();
         console.log(event.key);
         var keypress = this.readKey(event.key)
         if(keypress != 'empty') this.move(keypress)
@@ -77,7 +79,7 @@ startTimer() {
           this.context.drawImage(space_img, 230, 400, 35, 40);
       });*/
     })
-      this.socket.on("shoot", data =>{
+      /*this.socket.on("shoot", data =>{
         var shot = {'x': data.x, 'y': data.y-5}
         var ctx = this.context;
         var canvas = this.gameCanvas
@@ -91,17 +93,62 @@ startTimer() {
             ctx.fillStyle = 'black'
             ctx.fillRect(data.x, data.y, 20, 20);
             }, 2000);
-        }
-        
-        
+        }        
+    })*/
+
+    this.socket.on("shoot", data=>{
+        let laser = this.createLaserElement(data.x,data.y); 
+        this.context.drawImage(laser,data.x,data.y-15,35,40);
+        this.moveLaser(laser,data.x,data.y)
+
     })
+  }
+
+  public createLaserElement(x,y){ // LOADS LASER IMAGE
+      let x_position = x;
+      let y_position = y;
+      let new_laser = document.createElement("img");
+      new_laser.src = "../../assets/img/laser.png";
+      new_laser.classList.add('laser');
+      new_laser.style.left = `${x_position+40}px`;
+      new_laser.style.top = `${y_position+40}px`;
+      return new_laser;
+  }
+
+  public moveLaser(laser,x,y){
+    this.context = this.gameCanvas.nativeElement.getContext("2d");
+    let x_position = x
+    let y_position = y
+    let laserInterval = setInterval(()=>{
+        this.context.clearRect(x_position,y_position, 35, 40);
+        if(y_position < -50){ //THE LIMIT OF THE SCREEN
+            this.context.clearRect(x_position,y_position, 35, 40);
+        }else{
+            y_position -= 5
+            this.context.drawImage(laser,x_position,y_position,35,40);
+        }
+        this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
+        //this.checkIfEnemyWasShot(x_position, y_position);
+    },10)
+  }
+
+  public checkIfEnemyWasShot(x,y){
+    for(let enemy in this.Enemies_1){
+        if((this.Enemies_1[enemy].position_x >= x+4 && this.Enemies_1[enemy].position_x <= x-4)
+            &&
+           (this.Enemies_1[enemy].position_y >= y+4 && this.Enemies_1[enemy].position_y <= y-4)){
+                let index = this.Enemies_1.indexOf(this.Enemies_1[enemy]);
+                console.log("Enemy called at: "+index);
+            }
+        //console.log("X:"+this.Enemies_1[enemy].position_x+" Y:"+this.Enemies_1[enemy].position_y)
+    }
   }
 
   public destroyEnemy(//player1, player2
   ){
     /*player.score += 10
     //if player1.score >= 500{
-        winner = player1
+        winner = player1                                          
     }
     else if player2.score >=500{
         winner = player2
@@ -161,6 +208,7 @@ startTimer() {
   }
 
   public positionInvaders(){
+    var enemies : Enemy[] = []
     var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
     var ctx = canvas.getContext("2d");
     var images = [ // THE LENGTH IS DEFINED BY HOW MANY IMAGES WE WANT IN A SINGLE ROW
@@ -195,6 +243,10 @@ startTimer() {
                 i = 0;
                 pos_y += 65
             }
+            let invader = new Enemy();
+            invader.position_x = 33+40 * i;
+            invader.position_y = pos_y;
+            enemies.push(invader);
             var img = images[i];
             ctx.drawImage(img, 25+85 * i, pos_y, 35,40);
         }
@@ -205,6 +257,7 @@ startTimer() {
             ctx.drawImage(space_img, 230, 400, 35, 40);
         }   
     });
+    this.Enemies_1 = enemies;
   }
 
 }

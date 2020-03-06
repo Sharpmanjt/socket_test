@@ -96,7 +96,7 @@ var position = {
 
 var oldposx
 var oldposy
-
+//GET POSITION FROM HERE THIS FILE 
 io.on('connection', (socket) => {
     /*** GENERAL ***/
     // default username
@@ -163,7 +163,14 @@ io.on('connection', (socket) => {
                 position.y += 5;
                 io.emit("position", {position, oldposx, oldposy});
                 break;
+            case "appear":
+                io.emit("position", {position, oldposx, oldposy}); //POSITIONS SPACESHIP AT LAS POSITION RECORDED
+                break;
         }
     }); 
+
+    socket.on("shoot", data=>{
+        io.emit("shoot",position);
+    })
     
 });

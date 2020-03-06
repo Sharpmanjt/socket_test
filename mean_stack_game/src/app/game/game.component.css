@@ -51,3 +51,8 @@ button {
     -o-transition: all 3.5s ease-in-out;
     transition: all 3.5s ease-in-out;
 }
+.laser{
+    width:20px;
+    height:20px;
+    position:relative;
+}
