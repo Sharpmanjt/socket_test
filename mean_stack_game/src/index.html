@@ -26,23 +26,13 @@
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <script src="chat.js"></script>
 </body>
-<script> //SCRIPT TO GET THE X AND Y POSITION OF THE ENEMY WHEN CLICKED
-  /*$('.spacecraft').each(function(index){
-    $(this).animate({
-      left:
-    })
-    
-  })*/
-  var div = document.getElementById("#spacecraft")
-  var divOffset = offset(div);
-  console.log(divOffset.left, divOffset.right);
- 
-  function offset(el) {
-    console.log(el);
-     var rect = el[0].getBoundingClientRect(),
-     scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-     scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-     return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
- }
- </script>
+<script>
+  function printMousePos(event) {
+  console.log(
+    "clientX: " + event.clientX +
+    " - clientY: " + event.clientY)
+}
+
+document.addEventListener("click", printMousePos);
+</script>
 </html>
