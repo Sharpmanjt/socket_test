@@ -34,8 +34,8 @@ export class GameComponent implements OnInit {
 
     @ViewChild("game", {static: false})
     private gameCanvas: ElementRef;
-    private p1Score: Number = 0;
-    private p2Score: Number = 0;
+    private p1Score: number = 0;
+    private p2Score: number = 0;
     private time: number = 180;
     private context: any;
     private socket: any;
@@ -97,6 +97,18 @@ startTimer() {
       return new_laser;
   }
 
+
+  public enemyShot(x, y, enemies, player){
+        for(var enemy in enemies){
+            //console.log(enemies[enemy].position_x + " " + enemies[enemy].position_y)
+            if((enemies[enemy].position_x >= x + 40 && enemies[enemy].position_x <= x-40)
+                && enemies[enemy].position_y >= y + 40 && enemies[enemy].position_y <= y-40)
+                {
+                    console.log('oops')
+                }
+        }
+  }
+
   public moveLaser(laser,x,y){
     this.context = this.gameCanvas.nativeElement.getContext("2d");
     let x_position = x
@@ -104,6 +116,9 @@ startTimer() {
     let laserInterval = setInterval(()=>{
         console.log("Moving: "+x_position+", "+y_position);
         this.context.clearRect(x_position,y_position, 35, 40);
+
+        this.enemyShot(x_position, y_position, this.Enemies_1, this.player1)
+
         if(y_position < 5){ //THE LIMIT OF THE SCREEN
             this.context.clearRect(x_position,y_position, 35, 40);
             clearInterval(laserInterval);
@@ -113,11 +128,16 @@ startTimer() {
         }
         this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
         //console.log("This bullet x: "+x_position+". This bullet y:"+y_position);
+        
         let index = this.checkIfEnemyWasShot(x_position, y_position);
         if(index != -1){
             clearInterval(laserInterval);
             this.destroyEnemy(index);
+            return
         }
+
+
+
         /*if(index != -1){
             let context = this.context;
             console.log("About to destroy enemy");
@@ -133,18 +153,18 @@ startTimer() {
     },10)
     for(let enemy in this.Enemies_1){
         let index = this.Enemies_1.indexOf(this.Enemies_1[enemy]);
-        console.log(index+" : "+JSON.stringify(this.Enemies_1[enemy]));
+        //console.log(index+" : "+JSON.stringify(this.Enemies_1[enemy]));
     }
   }
 
   public checkIfEnemyWasShot(x,y){
     for(let enemy in this.Enemies_1){
-        if((this.Enemies_1[enemy].position_x + 10 >= x && this.Enemies_1[enemy].position_x - 10 <= x)
+        if((this.Enemies_1[enemy].position_x + 20 >= x && this.Enemies_1[enemy].position_x - 20 <= x)
             &&
-           (this.Enemies_1[enemy].position_y >= y && this.Enemies_1[enemy].position_y - 5 <= y)){
-            console.log("Enemy shot!");
+           (this.Enemies_1[enemy].position_y + 10 >= y && this.Enemies_1[enemy].position_y - 10 <= y)){
+            this.p1Score +=10 
             let index = this.Enemies_1.indexOf(this.Enemies_1[enemy]);
-            return index-1;
+            return index;
            }
     }
     return -1;
@@ -152,26 +172,29 @@ startTimer() {
 
   public destroyEnemy(index){
     let Enemy_posX = this.Enemies_1[index].position_x;
-    let Enemey_posY = this.Enemies_1[index].position_y;
+    let Enemy_posY = this.Enemies_1[index].position_y;
+
+    console.log("x:" + Enemy_posX + " y: " + Enemy_posY)
        
-    this.context.clearRect(Enemy_posX, Enemey_posY, 35, 40); //REMOVES ENEMY FROM CANVAS
+    this.context.clearRect(Enemy_posX, Enemy_posY, 35, 40); //REMOVES ENEMY FROM CANVAS
     let explosion_img = document.createElement("img");
     explosion_img.src = "../../assets/img/explosion2.png";
     let context = this.context;
     explosion_img.onload = function(){
-        context.drawImage(explosion_img, Enemy_posX+45, Enemey_posY, 35, 40); //PUTS THE EXPLOSION ENEMY ON SCREEN
+        context.drawImage(explosion_img, Enemy_posX, Enemy_posY, 35, 40); //PUTS THE EXPLOSION ENEMY ON SCREEN
     }
-    let remove_explosion = setTimeout(()=>{ //SETS A TIMER FOR .5 SECONDS TO REMOVE EXPLOSION IMG
-        console.log("Timer fired");
-        let explosion_x = this.Enemies_1[index].position_x;
-        let explosion_y = this.Enemies_1[index].position_y;
-        context.clearRect(explosion_x+45,explosion_y,35,40);
-        delete this.Enemies_1[index]; //REMOVES ENEMY FROM ARRAY OF ENEMIES
+    let explosion_x = this.Enemies_1[index].position_x;
+    let explosion_y = this.Enemies_1[index].position_y;
+    delete this.Enemies_1[index]; //REMOVES ENEMY FROM ARRAY OF ENEMIES
         for(let enemy in this.Enemies_1){
             let index = this.Enemies_1.indexOf(this.Enemies_1[enemy]);
             console.log(index+" : "+JSON.stringify(this.Enemies_1[enemy]));
         }
-    },500)
+    let remove_explosion = setTimeout(()=>{ //SETS A TIMER FOR .5 SECONDS TO REMOVE EXPLOSION IMG
+        console.log("Timer fired");
+        
+        context.clearRect(explosion_x,explosion_y,35,40);
+    },1000)
 
   }
 
@@ -210,8 +233,8 @@ startTimer() {
       switch(value){
         case('ArrowRight'):
             return 'right';
-        //case('ArrowUp'):
-               // return 'up';
+        case('ArrowUp'):
+               return 'up';
         case('ArrowLeft'):
                 return 'left';
         case('ArrowDown'):
@@ -260,14 +283,23 @@ startTimer() {
                 rows++;
                 i = 0;
                 pos_y += 65
+                pos_x += 12
             }
             let invader = new Enemy();
             invader.position_x = pos_x;
-            invader.position_y = pos_y+145;
+            console.log(pos_x)
+
+            //invader.position_y = pos_y + 145 **invaders were being drawn off the map
+            invader.position_y = pos_y;
             enemies.push(invader);
             var img = images[i];
-            ctx.drawImage(img, 25+85 * i, pos_y, 35,40);
+            ctx.drawImage(img, 50+(88 * i), pos_y, 35,40);
             pos_x+=88;
+
+            //invaders were being drawn off the map
+            if(pos_x >= 540){
+                pos_x -= 540
+            }
             //ctx.drawImage(img, 25+85 * i, pos_y, 35,40);
         }
         let space_img = document.createElement("img");
