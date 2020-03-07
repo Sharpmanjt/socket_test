@@ -27,8 +27,12 @@ export class GameComponent implements OnInit {
     handleKeyboardEvent(event: KeyboardEvent) { 
         //event.preventDefault();
         console.log(event.key);
-        var keypress = this.readKey(event.key)
-        if(keypress != 'empty') this.move(keypress)
+        if(this.gameOver == false)
+        //allows player to play game if game is not over
+        {
+            var keypress = this.readKey(event.key)
+            if(keypress != 'empty') this.move(keypress)
+        }
     
   }
 
@@ -39,9 +43,11 @@ export class GameComponent implements OnInit {
     private time: number = 180;
     private context: any;
     private socket: any;
+    private gameOver: boolean = false;
     private winner: Player;
     private player1: Player;
     private player2: Player;
+    private message: String = " "
     private Enemies_1 : Enemy[] = [] //Enemies at the left screen
     private Enemies_2 : Enemy[] = [] //Enemies at the right screen
 
@@ -52,7 +58,15 @@ interval;
 
 startTimer() {
   this.interval = setInterval(() => {
-    this.time -= 1;
+      //stops timer after 0
+    if(this.time > 0) this.time -= 1;
+    if(this.time == 0){
+        //if game ends
+        this.gameOver = true
+        if(this.p1Score > this.p2Score) this.message= "Player 1 wins!"
+        else if(this.p2Score > this.p1Score) this.message = "Player 2 wins!"
+        else this.message = "It's a draw!"
+    } 
   },1000)
 }
 
@@ -97,18 +111,6 @@ startTimer() {
       return new_laser;
   }
 
-
-  public enemyShot(x, y, enemies, player){
-        for(var enemy in enemies){
-            //console.log(enemies[enemy].position_x + " " + enemies[enemy].position_y)
-            if((enemies[enemy].position_x >= x + 40 && enemies[enemy].position_x <= x-40)
-                && enemies[enemy].position_y >= y + 40 && enemies[enemy].position_y <= y-40)
-                {
-                    console.log('oops')
-                }
-        }
-  }
-
   public moveLaser(laser,x,y){
     this.context = this.gameCanvas.nativeElement.getContext("2d");
     let x_position = x
@@ -116,8 +118,6 @@ startTimer() {
     let laserInterval = setInterval(()=>{
         console.log("Moving: "+x_position+", "+y_position);
         this.context.clearRect(x_position,y_position, 35, 40);
-
-        this.enemyShot(x_position, y_position, this.Enemies_1, this.player1)
 
         if(y_position < 5){ //THE LIMIT OF THE SCREEN
             this.context.clearRect(x_position,y_position, 35, 40);
@@ -132,6 +132,7 @@ startTimer() {
         let index = this.checkIfEnemyWasShot(x_position, y_position);
         if(index != -1){
             clearInterval(laserInterval);
+            this.context.clearRect(x_position,y_position, 35, 40);
             this.destroyEnemy(index);
             return
         }
@@ -162,6 +163,8 @@ startTimer() {
         if((this.Enemies_1[enemy].position_x + 20 >= x && this.Enemies_1[enemy].position_x - 20 <= x)
             &&
            (this.Enemies_1[enemy].position_y + 10 >= y && this.Enemies_1[enemy].position_y - 10 <= y)){
+
+            //will need to be changed to be dynamic to the player
             this.p1Score +=10 
             let index = this.Enemies_1.indexOf(this.Enemies_1[enemy]);
             return index;
@@ -176,6 +179,8 @@ startTimer() {
 
     console.log("x:" + Enemy_posX + " y: " + Enemy_posY)
        
+
+    //adjusted some of the values to line up enemy/ animation
     this.context.clearRect(Enemy_posX, Enemy_posY, 35, 40); //REMOVES ENEMY FROM CANVAS
     let explosion_img = document.createElement("img");
     explosion_img.src = "../../assets/img/explosion2.png";
@@ -190,6 +195,9 @@ startTimer() {
             let index = this.Enemies_1.indexOf(this.Enemies_1[enemy]);
             console.log(index+" : "+JSON.stringify(this.Enemies_1[enemy]));
         }
+
+
+    //moved above lines out of the timer so enemy is deleted before animation plays, so player can't hit same enemy twice
     let remove_explosion = setTimeout(()=>{ //SETS A TIMER FOR .5 SECONDS TO REMOVE EXPLOSION IMG
         console.log("Timer fired");
         
@@ -283,6 +291,8 @@ startTimer() {
                 rows++;
                 i = 0;
                 pos_y += 65
+
+                //lining up the third row
                 pos_x += 12
             }
             let invader = new Enemy();
