@@ -101,7 +101,8 @@ io.on('connection', (socket) => {
     /*** GENERAL ***/
     // default username
     socket.username = "Anonymous";
-
+    position.x = 230;
+    position.y = 400;
     console.log('new user connected');
     new Event({
         type: "CONNECTION",
@@ -142,6 +143,10 @@ io.on('connection', (socket) => {
     // })
 
     /*** GAME ***/
+    /*socket.on("resetPosition", ()=>{
+        position.x =0;
+        position.y = 0;
+    })*/
     socket.emit("position", {position, oldposx, oldposy});
     socket.on("move", data => {
         oldposx = position.x
@@ -157,14 +162,6 @@ io.on('connection', (socket) => {
                 //so player 1 doesnt go off map
                 if(position.x <= 500)
                 position.x += 5;
-                io.emit("position", {position, oldposx, oldposy});
-                break;
-            case "up":
-                position.y -= 5;
-                io.emit("position", {position, oldposx, oldposy});
-                break;
-            case "down":
-                position.y += 5;
                 io.emit("position", {position, oldposx, oldposy});
                 break;
             case "appear":
