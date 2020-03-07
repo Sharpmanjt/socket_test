@@ -148,11 +148,13 @@ io.on('connection', (socket) => {
         oldposy = position.y
         switch(data) {
             case "left":
+                //so player 1 doesn't go off map
                 if(position.x >= 5)
                 position.x -= 5;
                 io.emit("position", {position, oldposx, oldposy});
                 break;
             case "right":
+                //so player 1 doesnt go off map
                 if(position.x <= 500)
                 position.x += 5;
                 io.emit("position", {position, oldposx, oldposy});
