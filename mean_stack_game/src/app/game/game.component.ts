@@ -165,7 +165,7 @@ startTimer() {
       console.log("Invader shoot");
       let random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
       console.log(random);
-
+      
       //commented this as it caused an infinite loop once all enemies killed
       /*while(this.Enemies_1[random] == undefined){
         random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
@@ -423,15 +423,22 @@ startTimer() {
     }))
     .then(function(){
         let stop = false;
-        let rows = 1;
+        //let rows = 1;
+        var row;
         let pos_y = 5;
         let pos_x = 50;
         for(var i= 0; i < images.length; i++){
             if(i == images.length -1 && !stop){ // WE WANT TO STOP IF 3 ROWS HAVE ALREADY BE DRAWN
-                if(rows == 3){
+
+                //made changes show that 6 enemies show up in random spots
+                if(enemies.length == 6)
+                {
                     break;
                 }
-                rows++;
+                /*if(rows == 3){
+                    break;
+                }
+                rows++;*/
                 i = 0;
                 pos_y += 65
 
@@ -440,13 +447,15 @@ startTimer() {
                 pos_x += 12
             }
             let invader = new Enemy();
-            invader.position_x = pos_x;
             //console.log(pos_x)
 
             //invader.position_y = pos_y + 145 **invaders were being drawn off the map
-            invader.position_y = pos_y;
+            invader.position_x = pos_x;
             enemies.push(invader);
             var img = images[i];
+
+            row = Math.floor(Math.random() * 3)
+            invader.position_y = pos_y + (row * 65)
             console.log("x:" + invader.position_x + " y: " + invader.position_y)
             ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);
             console.log()
