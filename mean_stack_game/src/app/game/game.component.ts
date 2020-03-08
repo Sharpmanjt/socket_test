@@ -44,6 +44,7 @@ export class GameComponent implements OnInit {
     private context: any;
     private socket: any;
     private gameOver: boolean = false;
+    private playerDeath: boolean = false;
     private winner: Player;
     private player1: Player;
     private player2: Player;
@@ -56,6 +57,19 @@ export class GameComponent implements OnInit {
 
 interval;
 
+gameEnd(){
+        this.gameOver = true
+        if(this.playerDeath){
+            this.message = "Game over!"
+        }
+        else{
+            if(this.p1Score > this.p2Score) this.message= "Player 1 wins!"
+            else if(this.p2Score > this.p1Score) this.message = "Player 2 wins!"
+            else this.message = "It's a draw!"
+        }
+        
+}
+
 startTimer() {
   /*
     DIFFICULTY NUMBER:
@@ -66,6 +80,8 @@ startTimer() {
   let difficulty_number = 1;
   let counter = 0;
   this.interval = setInterval(() => {
+    
+    if(!this.gameOver){
     if(difficulty_number == 1){
         this.invaderShoot();
     }
@@ -80,16 +96,14 @@ startTimer() {
             this.invaderShoot();
             counter = 0;
         }
-    }
+    }}
       //stops timer after 0
+      if(!this.gameOver){
     if(this.time > 0) this.time -= 1;
     if(this.time == 0){
         //if game ends
-        this.gameOver = true
-        if(this.p1Score > this.p2Score) this.message= "Player 1 wins!"
-        else if(this.p2Score > this.p1Score) this.message = "Player 2 wins!"
-        else this.message = "It's a draw!"
-    } 
+        this.gameEnd()
+    } }
     counter++;
   },1000)
 }
@@ -115,11 +129,16 @@ startTimer() {
     public ngOnInit() {
         this.socket = io("http://localhost:3000");
         this.positionInvaders();
+        this.player1 = new Player()
+        this.player1.position_x = 230
+        this.player1.position_y = 400
         this.startTimer();
     }
     public ngAfterViewInit() {
       this.context = this.gameCanvas.nativeElement.getContext("2d");
       this.socket.on("position", data => {
+          this.player1.position_x = data.position.x
+          this.player1.position_y = data.position.y 
           //console.log(data.oldposx)
           //console.log(data.oldposy)
           //console.log(data.position)
@@ -146,15 +165,17 @@ startTimer() {
       console.log("Invader shoot");
       let random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
       console.log(random);
-      while(this.Enemies_1[random] == undefined){
+
+      //commented this as it caused an infinite loop once all enemies killed
+      /*while(this.Enemies_1[random] == undefined){
         random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
-      }
+      }*/
       if(this.Enemies_1[random] != undefined){
           let pos_x = this.Enemies_1[random].position_x;
           let pos_y = this.Enemies_1[random].position_y;
           let laser = this.createInvaderLaserElement(pos_x,pos_y);
-          this.context.drawImage(laser,pos_x,pos_y+10,35,40);
-         // this.moveInvaderLaser(laser, pos_x, pos_y);
+          this.context.drawImage(laser,pos_x,pos_y+20,35,40);
+          this.moveInvaderLaser(laser, pos_x, pos_y+20);
           
       }
   }
@@ -166,7 +187,7 @@ startTimer() {
     new_laser.src = "../../assets/img/laser.png";
     new_laser.classList.add('laser');
     new_laser.style.left = `${x_position-10}px`;
-    new_laser.style.top = `${y_position+-10}px`;
+    new_laser.style.top = `${y_position+30}px`;
     return new_laser;
   }
   public createLaserElement(x,y){ // LOADS LASER IMAGE
@@ -183,18 +204,30 @@ startTimer() {
       this.context = this.gameCanvas.nativeElement.getContext("2d");
       let x_position = x;
       let y_position = y;
+      var count = 0
       let laserInterval = setInterval(()=>{
         let img = this.context.getImageData(x_position,y_position, 35,40);
-        //  this.context.clearRect(x_position,y_position, 35, 40)
-        //this.drawEnemy(x_position,y_position);
-        if(y_position > 50){ //THE LIMIT OF THE SCREEN
-            //this.context.clearRect(x_position,y_position, 35, 40);
+        //to ensure only the bullet is fully cleared
+        if(count > 2) this.context.clearRect(x_position,y_position-5, 35, 40);
+
+        if(y_position > 670){ //THE LIMIT OF THE SCREEN
+            this.context.clearRect(x_position,y_position, 35, 40);
             clearInterval(laserInterval);
         }else{
+            this.checkIfPlayerWasShot(x_position, y_position)
             y_position += 5
+            count++
             this.context.drawImage(laser,x_position,y_position,35,40);
-            this.context.putImageData(img,35,40);
+
+            //this line was causing a glitchy animation
+            //this.context.putImageData(img,35,40);
         }
+
+
+        
+        //  this.context.clearRect(x_position,y_position, 35, 40)
+        //this.drawEnemy(x_position,y_position);
+        
       },10)
   }
 
@@ -238,6 +271,17 @@ startTimer() {
 
     },10)
 
+  }
+
+  public checkIfPlayerWasShot(x,y){
+        if((this.player1.position_x + 20 >= x && this.player1.position_x - 20 <= x)
+            &&
+           (this.player1.position_y + 10 >= y && this.player1.position_y - 10 <= y)){
+
+            this.playerDeath = true
+            this.gameEnd()
+           }
+    return -1;
   }
 
   public checkIfEnemyWasShot(x,y){
@@ -368,6 +412,7 @@ startTimer() {
                 pos_y += 65
 
                 //lining up the third row
+                
                 pos_x += 12
             }
             let invader = new Enemy();
@@ -378,7 +423,9 @@ startTimer() {
             invader.position_y = pos_y;
             enemies.push(invader);
             var img = images[i];
-            ctx.drawImage(img, 50+(88 * i), pos_y, 35,40);
+            console.log("x:" + invader.position_x + " y: " + invader.position_y)
+            ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);
+            console.log()
             pos_x+=88;
 
             //invaders were being drawn off the map
@@ -392,6 +439,7 @@ startTimer() {
         space_img.id = "spacecraft";
         space_img.onload = function(){
             ctx.drawImage(space_img, 230, 400, 35, 40);
+            
         }   
     });
     this.Enemies_1 = enemies;
