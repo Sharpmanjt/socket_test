@@ -214,10 +214,10 @@ startTimer() {
             this.context.clearRect(x_position,y_position, 35, 40);
             clearInterval(laserInterval);
         }else{
-            this.checkIfPlayerWasShot(x_position, y_position)
+            if(!this.checkIfPlayerWasShot(x_position, y_position)){
             y_position += 5
             count++
-            this.context.drawImage(laser,x_position,y_position,35,40);
+            this.context.drawImage(laser,x_position,y_position,35,40);}
 
             //this line was causing a glitchy animation
             //this.context.putImageData(img,35,40);
@@ -277,12 +277,36 @@ startTimer() {
         if((this.player1.position_x + 20 >= x && this.player1.position_x - 20 <= x)
             &&
            (this.player1.position_y + 10 >= y && this.player1.position_y - 10 <= y)){
-
             this.playerDeath = true
+            this.destroyPlayer(x, y)
             this.gameEnd()
+            return true
            }
-    return -1;
+    return false;
   }
+
+  public destroyPlayer(x,y){
+      var stop = false
+      if(!stop){
+
+      
+    //adjusted some of the values to line up enemy/ animation
+    this.context.clearRect(x,y, 35, 40); //REMOVES ENEMY FROM CANVAS
+    let explosion_img = document.createElement("img");
+    explosion_img.src = "../../assets/img/player_explosion.png";
+    let context = this.context;
+    explosion_img.onload = function(){
+        context.drawImage(explosion_img, x,y, 35, 40); //PUTS THE EXPLOSION IMAGE ON SCREEN
+    }
+
+
+    //moved above lines out of the timer so enemy is deleted before animation plays, so player can't hit same enemy twice
+    let remove_explosion = setTimeout(()=>{ //SETS A TIMER FOR .5 SECONDS TO REMOVE EXPLOSION IMG
+
+        
+        context.clearRect(x-20,y+20,35,40);
+        stop = true
+    },1000)}}
 
   public checkIfEnemyWasShot(x,y){
     for(let enemy in this.Enemies_1){
