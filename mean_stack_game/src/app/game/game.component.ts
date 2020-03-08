@@ -25,7 +25,6 @@ export class GameComponent implements OnInit {
     
     @HostListener('document:keydown', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent) { 
-        //event.preventDefault();
         console.log(event.key);
         if(this.gameOver == false)
         //allows player to play game if game is not over
@@ -137,12 +136,11 @@ startTimer() {
     public ngAfterViewInit() {
       this.context = this.gameCanvas.nativeElement.getContext("2d");
       this.socket.on("position", data => {
+
+          //continues to save player position, will need to be modified for 2 player
           this.player1.position_x = data.position.x
           this.player1.position_y = data.position.y 
-          //console.log(data.oldposx)
-          //console.log(data.oldposy)
-          //console.log(data.position)
-          //this.context.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+
           this.context.clearRect(data.oldposx, data.oldposy, 35, 40);
           let space_img = document.createElement("img");
           space_img.src = "../../assets/img/spaceship.png";
@@ -153,96 +151,27 @@ startTimer() {
     })
 
 
+    //***Player shoot methods */
+
     this.socket.on("shoot", data=>{
         let laser = this.createLaserElement(data.x,data.y); 
         this.context.drawImage(laser,data.x,data.y-15,35,40);
         this.moveLaser(laser,data.x,data.y)
-
     })
   }
 
-  public invaderShoot(){
-      console.log("Invader shoot");
-      let random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
-      console.log(random);
-      
-      //commented this as it caused an infinite loop once all enemies killed
-      /*while(this.Enemies_1[random] == undefined){
-        random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
-      }*/
-      if(this.Enemies_1[random] != undefined){
-          let pos_x = this.Enemies_1[random].position_x;
-          let pos_y = this.Enemies_1[random].position_y;
-          let laser = this.createInvaderLaserElement(pos_x,pos_y);
-          this.context.drawImage(laser,pos_x,pos_y+20,35,40);
-          this.moveInvaderLaser(laser, pos_x, pos_y+20);
-          
-      }
-  }
-
-  public createInvaderLaserElement(x,y){
+  public createLaserElement(x,y){ // LOADS LASER IMAGE
     let x_position = x;
     let y_position = y;
     let new_laser = document.createElement("img");
     new_laser.src = "../../assets/img/laser.png";
     new_laser.classList.add('laser');
-    new_laser.style.left = `${x_position-10}px`;
-    new_laser.style.top = `${y_position+30}px`;
+    new_laser.style.left = `${x_position+40}px`;
+    new_laser.style.top = `${y_position+40}px`;
     return new_laser;
-  }
-  public createLaserElement(x,y){ // LOADS LASER IMAGE
-      let x_position = x;
-      let y_position = y;
-      let new_laser = document.createElement("img");
-      new_laser.src = "../../assets/img/laser.png";
-      new_laser.classList.add('laser');
-      new_laser.style.left = `${x_position+40}px`;
-      new_laser.style.top = `${y_position+40}px`;
-      return new_laser;
-  }
-  public moveInvaderLaser(laser,x,y){
-      this.context = this.gameCanvas.nativeElement.getContext("2d");
-      let x_position = x;
-      let y_position = y;
-      var count = 0
-      let laserInterval = setInterval(()=>{
-        let img = this.context.getImageData(x_position,y_position, 35,40);
-        //to ensure only the bullet is fully cleared
-        if(count > 2) this.context.clearRect(x_position,y_position-5, 35, 40);
+}
 
-        if(y_position > 670){ //THE LIMIT OF THE SCREEN
-            this.context.clearRect(x_position,y_position, 35, 40);
-            clearInterval(laserInterval);
-        }else{
-            if(!this.checkIfPlayerWasShot(x_position, y_position)){
-            y_position += 5
-            count++
-            this.context.drawImage(laser,x_position,y_position,35,40);}
-
-            //this line was causing a glitchy animation
-            //this.context.putImageData(img,35,40);
-        }
-
-
-        
-        //  this.context.clearRect(x_position,y_position, 35, 40)
-        //this.drawEnemy(x_position,y_position);
-        
-      },10)
-  }
-
-  public drawEnemy(x,y){
-    let ctx = this.context;
-    let invader_img = document.createElement("img");
-    invader_img.src = "../../assets/img/invader.png";
-    invader_img.id = "spacecraft";
-    invader_img.onload = function(){
-        ctx.drawImage(invader_img, x, y, 35, 40);
-    }   
-  }
-
-
-  public moveLaser(laser,x,y){
+public moveLaser(laser,x,y){
     this.context = this.gameCanvas.nativeElement.getContext("2d");
     let x_position = x
     let y_position = y
@@ -272,41 +201,6 @@ startTimer() {
     },10)
 
   }
-
-  public checkIfPlayerWasShot(x,y){
-        if((this.player1.position_x + 20 >= x && this.player1.position_x - 20 <= x)
-            &&
-           (this.player1.position_y + 10 >= y && this.player1.position_y - 10 <= y)){
-            this.playerDeath = true
-            this.destroyPlayer(x, y)
-            this.gameEnd()
-            return true
-           }
-    return false;
-  }
-
-  public destroyPlayer(x,y){
-      var stop = false
-      if(!stop){
-
-      
-    //adjusted some of the values to line up enemy/ animation
-    this.context.clearRect(x,y, 35, 40); //REMOVES ENEMY FROM CANVAS
-    let explosion_img = document.createElement("img");
-    explosion_img.src = "../../assets/img/player_explosion.png";
-    let context = this.context;
-    explosion_img.onload = function(){
-        context.drawImage(explosion_img, x,y, 35, 40); //PUTS THE EXPLOSION IMAGE ON SCREEN
-    }
-
-
-    //moved above lines out of the timer so enemy is deleted before animation plays, so player can't hit same enemy twice
-    let remove_explosion = setTimeout(()=>{ //SETS A TIMER FOR .5 SECONDS TO REMOVE EXPLOSION IMG
-
-        
-        context.clearRect(x-20,y+20,35,40);
-        stop = true
-    },1000)}}
 
   public checkIfEnemyWasShot(x,y){
     for(let enemy in this.Enemies_1){
@@ -352,37 +246,123 @@ startTimer() {
 
   }
 
-  public enemyPass(//player
-  ){
-      //if an enemy passes your ship and goes off screen
+  //*** End player shoot methods */
 
 
-      /*
-      if((player.score -10) < 0){ player.score = 0}
-      else {player.score -=10}
-      */
+  //*** Enemy Shoot methods */
+  public invaderShoot(){
+      console.log("Invader shoot");
+      let random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
+      console.log(random);
+      
+      //commented this as it caused an infinite loop once all enemies killed
+      /*while(this.Enemies_1[random] == undefined){
+        random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
+      }*/
+      if(this.Enemies_1[random] != undefined){
+          let pos_x = this.Enemies_1[random].position_x;
+          let pos_y = this.Enemies_1[random].position_y;
+          let laser = this.createInvaderLaserElement(pos_x,pos_y);
+          this.context.drawImage(laser,pos_x,pos_y+20,35,40);
+          this.moveInvaderLaser(laser, pos_x, pos_y+20);
+          
+      }
   }
 
-  public shipCollision(//player, invader
-  ){
-    /*
-    if player and invader collide
-
-    if (player.position_x == invader.position_x && player.position_y == invader.position_y){
-        if(player == player1){
-            winner = player2
-        }
-        else if(player == player2){
-            winner = player1
-        }
-    }
-    */
+  public createInvaderLaserElement(x,y){
+    let x_position = x;
+    let y_position = y;
+    let new_laser = document.createElement("img");
+    new_laser.src = "../../assets/img/laser.png";
+    new_laser.classList.add('laser');
+    new_laser.style.left = `${x_position-10}px`;
+    new_laser.style.top = `${y_position+30}px`;
+    return new_laser;
   }
 
-  public move(direction: string) {
-    this.socket.emit("move", direction);
+  public moveInvaderLaser(laser,x,y){
+      this.context = this.gameCanvas.nativeElement.getContext("2d");
+      let x_position = x;
+      let y_position = y;
+      var count = 0
+      let laserInterval = setInterval(()=>{
+        let img = this.context.getImageData(x_position,y_position, 35,40);
+        //to ensure only the bullet is fully cleared
+        if(count > 2) this.context.clearRect(x_position,y_position-5, 35, 40);
+
+        if(y_position > 670){ //THE LIMIT OF THE SCREEN
+            this.context.clearRect(x_position,y_position, 35, 40);
+            clearInterval(laserInterval);
+        }else{
+            if(!this.checkIfPlayerWasShot(x_position, y_position)){
+            y_position += 5
+            count++
+            this.context.drawImage(laser,x_position,y_position,35,40);}
+
+            //this line was causing a glitchy animation
+            //this.context.putImageData(img,35,40);
+        }
+
+
+        
+        //  this.context.clearRect(x_position,y_position, 35, 40)
+        //this.drawEnemy(x_position,y_position);
+        
+      },10)
+  }
+
+  public checkIfPlayerWasShot(x,y){
+    if((this.player1.position_x + 20 >= x && this.player1.position_x - 20 <= x)
+        &&
+       (this.player1.position_y + 10 >= y && this.player1.position_y - 10 <= y)){
+        this.playerDeath = true
+        this.destroyPlayer(x, y)
+        this.gameEnd()
+        return true
+       }
+return false;
 }
 
+public destroyPlayer(x,y){
+    var stop = false
+    if(!stop){
+
+    
+  //adjusted some of the values to line up enemy/ animation
+  this.context.clearRect(x,y, 35, 40); //REMOVES ENEMY FROM CANVAS
+  let explosion_img = document.createElement("img");
+  explosion_img.src = "../../assets/img/player_explosion.png";
+  let context = this.context;
+  explosion_img.onload = function(){
+      context.drawImage(explosion_img, x,y, 35, 40); //PUTS THE EXPLOSION IMAGE ON SCREEN
+  }
+
+
+  //moved above lines out of the timer so enemy is deleted before animation plays, so player can't hit same enemy twice
+  let remove_explosion = setTimeout(()=>{ //SETS A TIMER FOR .5 SECONDS TO REMOVE EXPLOSION IMG
+
+      
+      context.clearRect(x-20,y+20,35,40);
+      stop = true
+  },1000)}}
+
+public move(direction: string) {
+  this.socket.emit("move", direction);
+}
+
+//***End enemy shoot methods */
+
+  public drawEnemy(x,y){
+    let ctx = this.context;
+    let invader_img = document.createElement("img");
+    invader_img.src = "../../assets/img/invader.png";
+    invader_img.id = "spacecraft";
+    invader_img.onload = function(){
+        ctx.drawImage(invader_img, x, y, 35, 40);
+    }   
+  }
+
+  
   public readKey(value: string){
       switch(value){
         case('ArrowRight'):
@@ -479,9 +459,3 @@ startTimer() {
   }
 
 }
-
-/* TODO:
-
-    2. Make the invaders to shoot when randomly
-
-*/
