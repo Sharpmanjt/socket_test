@@ -147,6 +147,7 @@ startTimer() {
         this.numPlayers++
         console.log(this.numPlayers)
         this.positionInvaders();
+        this.placeSeparator();
         this.startTimer();
     }
     public ngAfterViewInit() {
@@ -197,6 +198,19 @@ startTimer() {
     new_laser.style.left = `${x_position+40}px`;
     new_laser.style.top = `${y_position+40}px`;
     return new_laser;
+}
+
+public placeSeparator(){
+    console.log("Separator")
+    var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(560,0);
+    ctx.lineTo(560,705);
+    ctx.strokeStyle = 'green';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
 }
 
 public moveLaser(laser,x,y, data){
