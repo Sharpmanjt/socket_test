@@ -56,10 +56,11 @@ export class GameComponent implements OnInit {
 
 interval;
 
-gameEnd(){
+gameEnd(player){
         this.gameOver = true
         if(this.playerDeath){
-            this.message = "Game over!"
+            if(player == 1) this.message = "Player 2 wins!"
+            if(player == 2) this.message = "Player 1 wins!"
         }
         else{
             if(this.p1Score > this.p2Score) this.message= "Player 1 wins!"
@@ -82,10 +83,10 @@ startTimer() {
     
     if(!this.gameOver){
     if(difficulty_number == 1){
-        /*
+        
         this.invaderShoot(1);
         this.invaderShoot(2);
-
+/*
         this.invaderShoot(2);
         this.invaderShoot(1);
 
@@ -113,7 +114,7 @@ startTimer() {
     if(this.time > 0) this.socket.emit('timer');
     if(this.time == 0){
         //if game ends
-        this.gameEnd()
+        this.gameEnd(0)
     } }
     counter++;
   },2000)
@@ -231,36 +232,43 @@ public moveLaser(laser,x,y, data){
             }
             this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
 
-            
-            let index = this.checkIfEnemyWasShot(x_position, y_position);
+            console.log("player num" + data)
+            let index = this.checkIfEnemyWasShot(x_position, y_position, data);
             if(index != -1){
                 clearInterval(laserInterval);
                 this.context.clearRect(x_position,y_position, 35, 40);
-                this.destroyEnemy(index);
+                this.destroyEnemy(index, data);
                 return
             }
     },10)
 
   }
 
-  public checkIfEnemyWasShot(x,y){
-    for(let enemy in this.Enemies_1){
-        if((this.Enemies_1[enemy].position_x + 20 >= x && this.Enemies_1[enemy].position_x - 20 <= x)
+  public checkIfEnemyWasShot(x,y, player){
+      var enemies
+      if(player == 'p1') enemies = this.Enemies_1
+      if(player =='p2') enemies = this.Enemies_2
+    for(let enemy in enemies){
+        if((enemies[enemy].position_x + 20 >= x && enemies[enemy].position_x - 20 <= x)
             &&
-           (this.Enemies_1[enemy].position_y + 10 >= y && this.Enemies_1[enemy].position_y - 10 <= y)){
+           (enemies[enemy].position_y + 10 >= y && enemies[enemy].position_y - 10 <= y)){
 
             //will need to be changed to be dynamic to the player
-            this.p1Score +=10 
-            let index = this.Enemies_1.indexOf(this.Enemies_1[enemy]);
+            if(player == 'p1') this.p1Score +=10 
+            if(player == 'p2') this.p2Score +=10 
+            let index = enemies.indexOf(enemies[enemy]);
             return index;
            }
     }
     return -1;
   }
 
-  public destroyEnemy(index){
-    let Enemy_posX = this.Enemies_1[index].position_x;
-    let Enemy_posY = this.Enemies_1[index].position_y;
+  public destroyEnemy(index, player){
+    var enemies
+    if(player == 'p1') enemies = this.Enemies_1
+    if(player =='p2') enemies = this.Enemies_2
+    let Enemy_posX = enemies[index].position_x;
+    let Enemy_posY = enemies[index].position_y;
 
     console.log("x:" + Enemy_posX + " y: " + Enemy_posY)
        
@@ -273,9 +281,9 @@ public moveLaser(laser,x,y, data){
     explosion_img.onload = function(){
         context.drawImage(explosion_img, Enemy_posX, Enemy_posY, 35, 40); //PUTS THE EXPLOSION IMAGE ON SCREEN
     }
-    let explosion_x = this.Enemies_1[index].position_x;
-    let explosion_y = this.Enemies_1[index].position_y;
-    delete this.Enemies_1[index]; //REMOVES ENEMY FROM ARRAY OF ENEMIES
+    let explosion_x = enemies[index].position_x;
+    let explosion_y = enemies[index].position_y;
+    delete enemies[index]; //REMOVES ENEMY FROM ARRAY OF ENEMIES
 
 
     //moved above lines out of the timer so enemy is deleted before animation plays, so player can't hit same enemy twice
@@ -294,11 +302,12 @@ public moveLaser(laser,x,y, data){
   public invaderShoot(player){
       console.log("Invader shoot");
       var enemies
-      let random = Math.floor(Math.random() * (this.Enemies_1.length) + 0);
-      console.log(random);
       if(player == 1) enemies = this.Enemies_1
       if(player ==2) enemies = this.Enemies_2
+      console.log(player)
+      console.log(enemies)
       if(enemies != undefined){
+        let random = Math.floor(Math.random() * (enemies.length) + 0);
           let pos_x = enemies[random].position_x;
           let pos_y = enemies[random].position_y;
           let laser = this.createInvaderLaserElement(pos_x,pos_y);
@@ -355,8 +364,11 @@ public moveLaser(laser,x,y, data){
         &&
        (this.player1.position_y + 10 >= y && this.player1.position_y - 10 <= y)){
         this.playerDeath = true
+        var player
+        if(x > 585) player = 2
+        else player = 1
         this.destroyPlayer(x, y)
-        this.gameEnd()
+        this.gameEnd(player)
         return true
        }
 return false;
