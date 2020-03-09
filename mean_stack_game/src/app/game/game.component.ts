@@ -141,19 +141,10 @@ startTimer() {
     }
     public ngAfterViewInit() {
 
-        this.numPlayers = Number(localStorage.getItem('player'))
-        if(this.numPlayers == 1) var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
-        if(this.numPlayers == 2) var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
-        console.log(this.numPlayers)
-      //if(this.numPlayers!= 0){
-        var canvasString = "canvas_" + this.numPlayers
-        var canvas = <HTMLCanvasElement> document.getElementById(canvasString);
-      this.context = canvas.getContext("2d")//this.gameCanvas.nativeElement.getContext("2d");
+        var gameCanvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+        this.gameCanvas.nativeElement.getContext("2d");
       this.socket.on("position", data => {
-          console.log(data.playerNum)
-        var canvasString = "canvas_" + data.playerNum
-        var canvas = <HTMLCanvasElement> document.getElementById(canvasString);
-      this.context = canvas.getContext("2d")//this.gameCanvas.nativeElement.getContext("2d");
+            this.context = this.gameCanvas.nativeElement.getContext("2d");
             console.log('movement')
           //continues to save player position, will need to be modified for 2 player
           this.player1.position_x = data.position.x
@@ -180,11 +171,7 @@ startTimer() {
     //***Player shoot methods */
 
     this.socket.on("shoot", data=>{
-        console.log(data.player)
-        if(data.player == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
-        if(data.player == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
-        this.context = canvas.getContext("2d")
-        console.log(data.position)
+        this.context = gameCanvas.getContext("2d")
         let laser = this.createLaserElement(data.position.x,data.position.y); 
         this.context.drawImage(laser,data.position.x,data.position.y-15,35,40);
         this.moveLaser(laser,data.position.x,data.position.y, data.player)
@@ -203,20 +190,10 @@ startTimer() {
 }
 
 public moveLaser(laser,x,y, data){
-    console.log('data' + data)
-    var oldcanvas = 0
-    if(data == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
-    if(data == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
-    this.context = canvas.getContext("2d")
+    this.context = this.gameCanvas.nativeElement.getContext("2d");
     let x_position = x
     let y_position = y
     let laserInterval = setInterval(()=>{
-        if(oldcanvas != data && oldcanvas != 0){
-            if(data=='p1') data = 'p2'
-            else if(data == 'p2') data = 'p1'
-            if(data == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
-            if(data == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
-            this.context = canvas.getContext("2d")}
             //console.log("Moving: "+x_position+", "+y_position);
             this.context.clearRect(x_position,y_position, 35, 40);
 
@@ -227,7 +204,7 @@ public moveLaser(laser,x,y, data){
                 y_position -= 5
                 this.context.drawImage(laser,x_position,y_position,35,40);
             }
-            //this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
+            this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
 
             
             let index = this.checkIfEnemyWasShot(x_position, y_position);
@@ -237,8 +214,6 @@ public moveLaser(laser,x,y, data){
                 this.destroyEnemy(index);
                 return
             }
-            oldcanvas = data
-
     },10)
 
   }
@@ -437,10 +412,6 @@ public destroyPlayer(x,y){
         this.context.clearRect(0, 0, 540, 492);
     //this.socket.emit("resetPosition");
     var enemies : Enemy[] = []
-    var nump = this.numPlayers
-    if(this.numPlayers == 1) var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
-    if(this.numPlayers == 2) var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
-    console.log(this.numPlayers)
     var ctx = canvas.getContext("2d");
     var images = [ // THE LENGTH IS DEFINED BY HOW MANY IMAGES WE WANT IN A SINGLE ROW
         "../../assets/img/invader.png",
@@ -467,29 +438,20 @@ public destroyPlayer(x,y){
         var row;
         let pos_y = 5;
         let pos_x = 50;
+        var j = 0
         for(var i= 0; i < images.length; i++){
-            if(i == images.length -1 && !stop){ // WE WANT TO STOP IF 3 ROWS HAVE ALREADY BE DRAWN
+            if(i == images.length -1 && !stop){
 
                 //made changes show that 6 enemies show up in random spots
                 if(enemies.length == 6)
                 {
                     break;
                 }
-                /*if(rows == 3){
-                    break;
-                }
-                rows++;*/
                 i = 0;
                 pos_y += 65
-
-                //lining up the third row
-                
                 pos_x += 12
             }
             let invader = new Enemy();
-            //console.log(pos_x)
-
-            //invader.position_y = pos_y + 145 **invaders were being drawn off the map
             invader.position_x = pos_x;
             enemies.push(invader);
             var img = images[i];
@@ -500,23 +462,54 @@ public destroyPlayer(x,y){
             ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);
             console.log()
             pos_x+=88;
-
-            //invaders were being drawn off the map
-            if(pos_x >= 540){
-                pos_x -= 540
-            }
-            //ctx.drawImage(img, 25+85 * i, pos_y, 35,40);
-        }
-        let space_img = document.createElement("img");
-        space_img.src = "../../assets/img/spaceship.png";
-        space_img.id = "spacecraft";
-        space_img.onload = function(){
-            ctx.drawImage(space_img, 230, 400, 35, 40);
             
-        }   
+        } 
+            let space_img = document.createElement("img");
+            space_img.src = "../../assets/img/spaceship.png";
+            space_img.id = "spacecraft";
+            space_img.onload = function(){
+            ctx.drawImage(space_img, 230 + (540 * j), 400, 35, 40); 
+            
+            j = 1
+            let pos_x = 590;
+            for(var i= 0; i < images.length; i++){
+                if(i == images.length -1 && !stop){
+    
+                    //made changes show that 6 enemies show up in random spots
+                    if(enemies.length >= 6)
+                    {
+                        break;
+                    }
+                    i = 0;
+                    pos_y += 65
+                    pos_x += 12
+                }
+                let invader = new Enemy();
+                invader.position_x = pos_x;
+                enemies.push(invader);
+                var img = images[i];
+    
+                row = Math.floor(Math.random() * 3)
+                invader.position_y = pos_y + (row * 65)
+                console.log("x:" + invader.position_x + " y: " + invader.position_y)
+                ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);
+                console.log()
+                pos_x+=88;
+                
+            } 
+                space_img = document.createElement("img");
+                space_img.src = "../../assets/img/spaceship.png";
+                space_img.id = "spacecraft";
+                space_img.onload = function(){
+                ctx.drawImage(space_img, 230 + (540 * j), 400, 35, 40); 
+            
+        }}
+          
     });
     if(this.numPlayers == 1) this.Enemies_1 = enemies
     if(this.numPlayers == 2) this.Enemies_2 = enemies
+
+    
   }
   }
 }
