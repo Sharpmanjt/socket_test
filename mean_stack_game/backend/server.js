@@ -3,12 +3,13 @@ var path = require('path');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 
+var numPlayers = 0
+var gameTime = 180
 // models
 let History = require('./models/history');
 let Event = require('./models/event');
 let User = require('./models/user');
 let Game = require('./models/game');
-
 // connecting to database
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
@@ -89,21 +90,38 @@ function handleError(res, reason, message, code) {
 /*** SOCKETS ***/
 var io = require("socket.io")(server);
 
-var position = {
+var position 
+var positionp1 = {
     x: 230,
     y: 400
 };
 
+var positionp2 = {
+    x: 230,
+    y: 400
+}; 
+
+var boundary = {
+    l: 0,
+    r: 0
+}
+
 var oldposx
 var oldposy
 //GET POSITION FROM HERE THIS FILE 
+
+
+
 io.on('connection', (socket) => {
     /*** GENERAL ***/
     // default username
     socket.username = "Anonymous";
-    position.x = 230;
-    position.y = 400;
+    //position.x = 230;
+    //position.y = 400;
+    boundary.l = 5;
+    boundary.r = 500
     console.log('new user connected');
+    
     new Event({
         type: "CONNECTION",
         date: Date.now(),
@@ -111,6 +129,13 @@ io.on('connection', (socket) => {
         user: socket.username
     }).save();  
     
+    //keeps time identical for both players
+    socket.on('timer', () =>{
+        gameTime--
+        if(gameTime < 0) gameTime = 0
+        io.emit('timerDown', gameTime)
+    })
+
     socket.on('disconnect', function(){
         console.log('user disconnected');
         new Event({
@@ -119,6 +144,26 @@ io.on('connection', (socket) => {
             time: Date.now(),
             user: socket.username
         }).save();
+    });
+
+
+    socket.on('checkPlayers', () =>{
+        numPlayers++
+        if(numPlayers == 1){
+            positionp1.x = 230;
+            positionp1.y = 400;
+            io.emit("player_join", {numPlayers, positionp1, boundary})
+        }
+        else{
+            positionp2.x = 230;
+            positionp2.y = 400;
+            boundary.l = 5;
+            boundary.r = 500
+            
+            console.log(numPlayers)
+            io.emit("player_join", {numPlayers, positionp2, boundary})
+        }
+        
     });
 
     /*** CHAT ***/
@@ -147,25 +192,52 @@ io.on('connection', (socket) => {
         position.x =0;
         position.y = 0;
     })*/
-    socket.emit("position", {position, oldposx, oldposy});
+    //socket.emit("position", {position, oldposx, oldposy});
     socket.on("move", data => {
-        oldposx = position.x
-        oldposy = position.y
+        var playerNum
         switch(data) {
             case "left":
+                playerNum = 2
+                oldposx = positionp2.x
+                oldposy = positionp2.y
                 //so player 1 doesn't go off map
-                if(position.x >= 5)
-                position.x -= 5;
-                io.emit("position", {position, oldposx, oldposy});
+                if(positionp2.x >= boundary.l)
+                positionp2.x -= 5;
+                position = positionp2
+                io.emit("position", {position, oldposx, oldposy, playerNum});
                 break;
             case "right":
+                playerNum = 2
+                oldposx = positionp2.x
+                oldposy = positionp2.y
                 //so player 1 doesnt go off map
-                if(position.x <= 500)
-                position.x += 5;
-                io.emit("position", {position, oldposx, oldposy});
+                if(positionp2.x <= boundary.r)
+                positionp2.x += 5;
+                position = positionp2
+                io.emit("position", {position, oldposx, oldposy, playerNum});
                 break;
-            case "appear":
-                io.emit("position", {position, oldposx, oldposy}); //POSITIONS SPACESHIP AT LAS POSITION RECORDED
+            case "z":
+                //so player 1 doesn't go off map
+                playerNum = 1
+                oldposx = positionp1.x
+                oldposy = positionp1.y
+                if(positionp1.x >= boundary.l)
+                positionp1.x -= 5;
+                position = positionp1
+                io.emit("position", {position, oldposx, oldposy, playerNum});
+                break;
+            case "c":
+                //so player 1 doesnt go off map
+                playerNum = 1
+                oldposx = positionp1.x
+                oldposy = positionp1.y
+                if(positionp1.x <= boundary.r)
+                positionp1.x += 5;
+                position = positionp1
+                io.emit("position", {position, oldposx, oldposy, playerNum});
+                break;
+            //case "appear":
+                //io.emit("position", {position, oldposx, oldposy}); //POSITIONS SPACESHIP AT LAS POSITION RECORDED
                 break;
         }
     }); 

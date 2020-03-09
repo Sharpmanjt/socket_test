@@ -8,6 +8,7 @@ import { MenuComponent } from './menu/menu.component';
 import { GameComponent } from './game/game.component';
 import { ChatComponent } from './chat/chat.component';
 import { HttpModule } from '@angular/http';
+import { CookieModule } from 'ngx-cookie';
 
 import { 
   MatToolbarModule,

@@ -12,7 +12,6 @@ import {
     // ...
   } from '@angular/animations';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-
 @Component({
     selector: 'app-game',
     templateUrl: './game.component.html',
@@ -48,6 +47,7 @@ export class GameComponent implements OnInit {
     private player1: Player;
     private player2: Player;
     private message: String = " "
+    private numPlayers: number = 0
     private Enemies_1 : Enemy[] = [] //Enemies at the left screen
     private Enemies_2 : Enemy[] = [] //Enemies at the right screen
 
@@ -80,6 +80,7 @@ startTimer() {
   let counter = 0;
   this.interval = setInterval(() => {
     
+    /*disabling temporarily
     if(!this.gameOver){
     if(difficulty_number == 1){
         this.invaderShoot();
@@ -95,16 +96,17 @@ startTimer() {
             this.invaderShoot();
             counter = 0;
         }
-    }}
+    }}*/
       //stops timer after 0
-      if(!this.gameOver){
-    if(this.time > 0) this.time -= 1;
+
+    if(!this.gameOver){
+    if(this.time > 0) this.socket.emit('timer');
     if(this.time == 0){
         //if game ends
         this.gameEnd()
     } }
     counter++;
-  },1000)
+  },2000)
 }
 
     /*public shootOnDifficulty(difficulty_number, counter){
@@ -127,16 +129,32 @@ startTimer() {
 
     public ngOnInit() {
         this.socket = io("http://localhost:3000");
-        this.positionInvaders();
+
+        this.socket.emit("checkPlayers")
+
         this.player1 = new Player()
         this.player1.position_x = 230
         this.player1.position_y = 400
+        this.numPlayers++
+        this.positionInvaders();
         this.startTimer();
     }
     public ngAfterViewInit() {
-      this.context = this.gameCanvas.nativeElement.getContext("2d");
-      this.socket.on("position", data => {
 
+        this.numPlayers = Number(localStorage.getItem('player'))
+        if(this.numPlayers == 1) var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+        if(this.numPlayers == 2) var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
+        console.log(this.numPlayers)
+      //if(this.numPlayers!= 0){
+        var canvasString = "canvas_" + this.numPlayers
+        var canvas = <HTMLCanvasElement> document.getElementById(canvasString);
+      this.context = canvas.getContext("2d")//this.gameCanvas.nativeElement.getContext("2d");
+      this.socket.on("position", data => {
+          console.log(data.playerNum)
+        var canvasString = "canvas_" + data.playerNum
+        var canvas = <HTMLCanvasElement> document.getElementById(canvasString);
+      this.context = canvas.getContext("2d")//this.gameCanvas.nativeElement.getContext("2d");
+            console.log('movement')
           //continues to save player position, will need to be modified for 2 player
           this.player1.position_x = data.position.x
           this.player1.position_y = data.position.y 
@@ -147,10 +165,18 @@ startTimer() {
           space_img.id = "spacecraft";
           this.context.drawImage(space_img, data.position.x, data.position.y, 35, 40)
 
-        
+       
+    })//}
+
+    this.socket.on("player_join", data =>{
+        console.log("player join")
+        this.numPlayers = data.numPlayers
+        this.positionInvaders();
     })
 
-
+    this.socket.on('timerDown', data =>{
+        this.time = data
+    })
     //***Player shoot methods */
 
     this.socket.on("shoot", data=>{
@@ -186,7 +212,7 @@ public moveLaser(laser,x,y){
             y_position -= 5
             this.context.drawImage(laser,x_position,y_position,35,40);
         }
-        this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
+        //this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
 
         
         let index = this.checkIfEnemyWasShot(x_position, y_position);
@@ -346,10 +372,6 @@ public destroyPlayer(x,y){
       stop = true
   },1000)}}
 
-public move(direction: string) {
-  this.socket.emit("move", direction);
-}
-
 //***End enemy shoot methods */
 
   public drawEnemy(x,y){
@@ -362,7 +384,11 @@ public move(direction: string) {
     }   
   }
 
-  
+  public move(direction: string) {
+      console.log('move function')
+    this.socket.emit("move", direction);
+  }
+
   public readKey(value: string){
       switch(value){
         case('ArrowRight'):
@@ -372,15 +398,25 @@ public move(direction: string) {
         case 'p':
             this.socket.emit("shoot", 'x')
             break;
+        case('c'):
+            return 'c';
+        case('z'):
+                return 'z';
+        case 'q':
+            this.socket.emit("shoot", 'q')
+            break;
         default:
             return 'empty';
       }
   }
 
   public positionInvaders(){
+    if(this.numPlayers!= 0){
     //this.socket.emit("resetPosition");
     var enemies : Enemy[] = []
-    var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+    if(this.numPlayers == 1) var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+    if(this.numPlayers == 2) var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
+    console.log(this.numPlayers)
     var ctx = canvas.getContext("2d");
     var images = [ // THE LENGTH IS DEFINED BY HOW MANY IMAGES WE WANT IN A SINGLE ROW
         "../../assets/img/invader.png",
@@ -457,5 +493,5 @@ public move(direction: string) {
     });
     this.Enemies_1 = enemies;
   }
-
+  }
 }
