@@ -97,7 +97,7 @@ var positionp1 = {
 };
 
 var positionp2 = {
-    x: 730,
+    x: 770,
     y: 400
 }; 
 
@@ -107,7 +107,7 @@ var boundaryp1 = {
 }
 
 var boundaryp2 = {
-    l: 545,
+    l: 585,
     r: 1040
 }
 
@@ -163,7 +163,7 @@ io.on('connection', (socket) => {
             io.emit("player_join", {numPlayers, positionp1, boundaryp1})
         }
         else{
-            positionp2.x = 730;
+            positionp2.x = 770;
             positionp2.y = 400;
             
             console.log(numPlayers)

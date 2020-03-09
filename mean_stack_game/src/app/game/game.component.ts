@@ -82,6 +82,7 @@ startTimer() {
     
     if(!this.gameOver){
     if(difficulty_number == 1){
+        /*
         this.invaderShoot(1);
         this.invaderShoot(2);
 
@@ -92,7 +93,7 @@ startTimer() {
         this.invaderShoot(2);
 
         this.invaderShoot(2);
-        this.invaderShoot(1);
+        this.invaderShoot(1);*/
     }
     else if(difficulty_number == 2){
         if(counter == 2){
@@ -525,7 +526,7 @@ public destroyPlayer(x,y){
                 space_img.src = "../../assets/img/spaceship.png";
                 space_img.id = "spacecraft";
                 space_img.onload = function(){
-                ctx.drawImage(space_img, 230 + (540 * j), 400, 35, 40); 
+                ctx.drawImage(space_img, 770, 400, 35, 40); 
             
         }}
           
