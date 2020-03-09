@@ -97,13 +97,18 @@ var positionp1 = {
 };
 
 var positionp2 = {
-    x: 230,
+    x: 730,
     y: 400
 }; 
 
-var boundary = {
-    l: 0,
-    r: 0
+var boundaryp1 = {
+    l: 5,
+    r: 500
+}
+
+var boundaryp2 = {
+    l: 545,
+    r: 1040
 }
 
 var oldposx
@@ -121,8 +126,6 @@ io.on('connection', (socket) => {
     socket.username = "Anonymous";
     //position.x = 230;
     //position.y = 400;
-    boundary.l = 5;
-    boundary.r = 500
     console.log('new user connected');
     
     new Event({
@@ -157,16 +160,14 @@ io.on('connection', (socket) => {
         if(numPlayers == 1){
             positionp1.x = 230;
             positionp1.y = 400;
-            io.emit("player_join", {numPlayers, positionp1, boundary})
+            io.emit("player_join", {numPlayers, positionp1, boundaryp1})
         }
         else{
-            positionp2.x = 230;
+            positionp2.x = 730;
             positionp2.y = 400;
-            boundary.l = 5;
-            boundary.r = 500
             
             console.log(numPlayers)
-            io.emit("player_join", {numPlayers, positionp2, boundary})
+            io.emit("player_join", {numPlayers, positionp2, boundaryp2})
         }
         
     });
@@ -206,7 +207,7 @@ io.on('connection', (socket) => {
                 oldposx = positionp2.x
                 oldposy = positionp2.y
                 //so player 1 doesn't go off map
-                if(positionp2.x >= boundary.l)
+                if(positionp2.x >= boundaryp2.l)
                 positionp2.x -= 5;
                 position = positionp2
                 io.emit("position", {position, oldposx, oldposy, playerNum});
@@ -216,7 +217,7 @@ io.on('connection', (socket) => {
                 oldposx = positionp2.x
                 oldposy = positionp2.y
                 //so player 1 doesnt go off map
-                if(positionp2.x <= boundary.r)
+                if(positionp2.x <= boundaryp2.r)
                 positionp2.x += 5;
                 position = positionp2
                 io.emit("position", {position, oldposx, oldposy, playerNum});
@@ -226,7 +227,7 @@ io.on('connection', (socket) => {
                 playerNum = 1
                 oldposx = positionp1.x
                 oldposy = positionp1.y
-                if(positionp1.x >= boundary.l)
+                if(positionp1.x >= boundaryp1.l)
                 positionp1.x -= 5;
                 position = positionp1
                 io.emit("position", {position, oldposx, oldposy, playerNum});
@@ -236,7 +237,7 @@ io.on('connection', (socket) => {
                 playerNum = 1
                 oldposx = positionp1.x
                 oldposy = positionp1.y
-                if(positionp1.x <= boundary.r)
+                if(positionp1.x <= boundaryp1.r)
                 positionp1.x += 5;
                 position = positionp1
                 io.emit("position", {position, oldposx, oldposy, playerNum});
