@@ -184,7 +184,7 @@ startTimer() {
         if(data.player == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
         if(data.player == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
         this.context = canvas.getContext("2d")
-        console.log(data.position       )
+        console.log(data.position)
         let laser = this.createLaserElement(data.position.x,data.position.y); 
         this.context.drawImage(laser,data.position.x,data.position.y-15,35,40);
         this.moveLaser(laser,data.position.x,data.position.y, data.player)
@@ -204,33 +204,40 @@ startTimer() {
 
 public moveLaser(laser,x,y, data){
     console.log('data' + data)
+    var oldcanvas = 0
     if(data == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
     if(data == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
     this.context = canvas.getContext("2d")
     let x_position = x
     let y_position = y
     let laserInterval = setInterval(()=>{
-        //console.log("Moving: "+x_position+", "+y_position);
-        this.context.clearRect(x_position,y_position, 35, 40);
-
-        if(y_position < 5){ //THE LIMIT OF THE SCREEN
+        if(oldcanvas != data && oldcanvas != 0){
+            if(data=='p1') data = 'p2'
+            else if(data == 'p2') data = 'p1'
+            if(data == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+            if(data == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
+            this.context = canvas.getContext("2d")}
+            //console.log("Moving: "+x_position+", "+y_position);
             this.context.clearRect(x_position,y_position, 35, 40);
-            clearInterval(laserInterval);
-        }else{
-            y_position -= 5
-            this.context.drawImage(laser,x_position,y_position,35,40);
-        }
-        //this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
 
-        
-        let index = this.checkIfEnemyWasShot(x_position, y_position);
-        if(index != -1){
-            clearInterval(laserInterval);
-            this.context.clearRect(x_position,y_position, 35, 40);
-            this.destroyEnemy(index);
-            return
-        }
+            if(y_position < -5){ //THE LIMIT OF THE SCREEN
+                this.context.clearRect(x_position,y_position, 35, 40);
+                clearInterval(laserInterval);
+            }else{
+                y_position -= 5
+                this.context.drawImage(laser,x_position,y_position,35,40);
+            }
+            //this.move("appear"); //IT CALLS THE SERVER TO POSITION THE SPACESHIP AT THE LAST POSITION RECORDED
 
+            
+            let index = this.checkIfEnemyWasShot(x_position, y_position);
+            if(index != -1){
+                clearInterval(laserInterval);
+                this.context.clearRect(x_position,y_position, 35, 40);
+                this.destroyEnemy(index);
+                return
+            }
+            oldcanvas = data
 
     },10)
 

@@ -115,6 +115,9 @@ var oldposy
 io.on('connection', (socket) => {
     /*** GENERAL ***/
     // default username
+
+    if(gameTime < 180) gameTime = 180
+
     socket.username = "Anonymous";
     //position.x = 230;
     //position.y = 400;
@@ -139,6 +142,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', function(){
         console.log('user disconnected');
         numPlayers--
+        if(numPlayers < 0) numPlayers = 0
         new Event({
             type: "DISCONNECTION",
             date: Date.now(),
