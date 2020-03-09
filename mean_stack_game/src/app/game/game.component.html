@@ -10,27 +10,18 @@
 </mat-grid-list>
 
 <mat-grid-list cols="5" rowHeight="600px">
-    <mat-grid-tile [colspan]="2" [rowspan]="1">
+    <mat-grid-tile [colspan]="4" [rowspan]="1">
         <div class="game-tile">
             <mat-toolbar class="game-toolbar">
                 <p>SCORE</p>
                 <p class="score">{{p1Score}}</p>
             </mat-toolbar>
-            <canvas #game id="canvas_1" width="540" height="492" style="border: 1px solid black">
+            <canvas #game id="canvas_1" width="1080" height="492" style="border: 1px solid black">
                 <!--<img class="invader" *ngFor="let invader of Enemies_1" src="../../assets/img/invader.png" height="30px" width="30px">-->
             </canvas>
         </div>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="1" [rowspan]="1">
         <app-chat></app-chat>
-    </mat-grid-tile>
-    <mat-grid-tile [colspan]="2" [rowspan]="1">
-        <div class="game-tile">
-            <mat-toolbar class="game-toolbar">
-                <p>SCORE</p>
-                <p class="score">{{p2Score}}</p>
-            </mat-toolbar>
-            <canvas #game id="canvas_2" width="540" height="492" style="border: 1px solid black"></canvas>
-        </div>
     </mat-grid-tile>
 </mat-grid-list>
