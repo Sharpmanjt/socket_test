@@ -84,6 +84,15 @@ startTimer() {
     if(difficulty_number == 1){
         this.invaderShoot(1);
         this.invaderShoot(2);
+
+        this.invaderShoot(2);
+        this.invaderShoot(1);
+
+        this.invaderShoot(1);
+        this.invaderShoot(2);
+
+        this.invaderShoot(2);
+        this.invaderShoot(1);
     }
     else if(difficulty_number == 2){
         if(counter == 2){
@@ -270,13 +279,8 @@ public moveLaser(laser,x,y, data){
   public invaderShoot(player){
       console.log("Invader shoot");
       var enemies
-      let random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
+      let random = Math.floor(Math.random() * (this.Enemies_1.length) + 0);
       console.log(random);
-      
-      //commented this as it caused an infinite loop once all enemies killed
-      /*while(this.Enemies_1[random] == undefined){
-        random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
-      }*/
       if(player == 1) enemies = this.Enemies_1
       if(player ==2) enemies = this.Enemies_2
       if(enemies != undefined){
