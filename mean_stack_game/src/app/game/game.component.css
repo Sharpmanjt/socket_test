@@ -20,6 +20,10 @@ button {
     top: 0;
 }
 
+mat-grid-list {
+    width: 97%;
+}
+
 .chat-tile {
     background-color: #119822;
     padding: 0px;
@@ -28,16 +32,59 @@ button {
     height: 532px;
 }
 
-.chat-toolbar, .game-toolbar {
+.chat-toolbar, .game-toolbar, .time-bar {
     font-size: 20px;
     text-align: center;
     height: 40px;
     font-family: 'Coda Caption', sans-serif;
 }
 
-.score {
+.time-bar {
+    width: 40%;
+    margin: 10px auto;
+    justify-content: center;
+}
+
+.game-toolbar{
+    justify-content: space-between;
+}
+
+/* .score-bar-div {
+    margin: auto;
+} */
+
+.score, .time{
     color: red;
 }
+
+.score-left p, .score-right p {
+    display: inline;
+}
+
+span {
+    display: inline-block;
+}
+
+.score-left, .score-right, .instrution-left, .instrution-right {
+    display: inline-block;
+    margin: 0px;
+}
+
+.score-right, .instrution-right {
+    float: right;
+}
+
+.score-left, .instrution-left {
+    float: left;
+}
+.instruction2{
+    font-size: 18px;
+    font-family: fantasy;
+}
+.instrution{
+    color:red;
+}
+
 .invader-img{
     height: 2px;
     width:2px;
