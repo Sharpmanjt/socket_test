@@ -65,17 +65,24 @@ span {
     display: inline-block;
 }
 
-.score-left, .score-right {
+.score-left, .score-right, .instrution-left, .instrution-right {
     display: inline-block;
     margin: 0px;
 }
 
-.score-right {
+.score-right, .instrution-right {
     float: right;
 }
 
-.score-left {
+.score-left, .instrution-left {
     float: left;
+}
+.instruction2{
+    font-size: 18px;
+    font-family: fantasy;
+}
+.instrution{
+    color:red;
 }
 
 .invader-img{
