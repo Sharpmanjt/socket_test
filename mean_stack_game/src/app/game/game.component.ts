@@ -403,7 +403,7 @@ public destroyPlayer(x,y){
   }
 
   public positionInvaders(){
-    if(this.numPlayers!= 0){
+    if(this.numPlayers== 2){
         //fix display issue canvas 1
         var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
         //var canvasString = "canvas_" + this.numPlayers
@@ -412,6 +412,7 @@ public destroyPlayer(x,y){
         this.context.clearRect(0, 0, 540, 492);
     //this.socket.emit("resetPosition");
     var enemies : Enemy[] = []
+    var enemies2: Enemy[] = []
     var ctx = canvas.getContext("2d");
     var images = [ // THE LENGTH IS DEFINED BY HOW MANY IMAGES WE WANT IN A SINGLE ROW
         "../../assets/img/invader.png",
@@ -476,8 +477,8 @@ public destroyPlayer(x,y){
                 if(i == images.length -1 && !stop){
     
                     //made changes show that 6 enemies show up in random spots
-                    if(enemies.length >= 6)
-                    {
+                    if(enemies2.length >= 6)
+                    {   
                         break;
                     }
                     i = 0;
@@ -486,7 +487,7 @@ public destroyPlayer(x,y){
                 }
                 let invader = new Enemy();
                 invader.position_x = pos_x;
-                enemies.push(invader);
+                enemies2.push(invader);
                 var img = images[i];
     
                 row = Math.floor(Math.random() * 3)
@@ -497,6 +498,7 @@ public destroyPlayer(x,y){
                 pos_x+=88;
                 
             } 
+                
                 space_img = document.createElement("img");
                 space_img.src = "../../assets/img/spaceship.png";
                 space_img.id = "spacecraft";
@@ -506,8 +508,8 @@ public destroyPlayer(x,y){
         }}
           
     });
-    if(this.numPlayers == 1) this.Enemies_1 = enemies
-    if(this.numPlayers == 2) this.Enemies_2 = enemies
+         this.Enemies_1 = enemies
+         this.Enemies_2 = enemies2
 
     
   }
