@@ -110,7 +110,8 @@ var boundaryp2 = {
     l: 585,
     r: 1040
 }
-
+var enemies1 = [];
+var enemies2 = [];
 var oldposx
 var oldposy
 //GET POSITION FROM HERE THIS FILE 
@@ -154,6 +155,31 @@ io.on('connection', (socket) => {
         }).save();
     });
 
+    socket.on('invaders1_pos', (data)=>{
+        console.log("setting enemies1")
+        console.log(JSON.stringify(data));
+        if(enemies1.length == 0){
+            enemies1 = data;
+        }
+        io.emit("invaders_p1",enemies1);
+
+        //io.emit("invaders_p1",enemies1);
+    })
+    socket.on('invaders2_pos', (data)=>{
+        console.log("setting enemies2")
+        console.log(JSON.stringify(data));
+        if(enemies2.length == 0){
+            enemies2 = data;
+        }
+        io.emit("invaders_p2",enemies2);
+        //io.emit("invaders_p2",enemies2);
+    })
+    /*socket.on('geti1_pos',()=>{
+        io.emit("invaders_p1",enemies1);
+    })
+    socket.on("geti2_pos", ()=>{
+        io.emit("invaders_p2",enemies2);
+    })*/
 
     socket.on('checkPlayers', () =>{
         numPlayers++
