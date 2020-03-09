@@ -29,12 +29,6 @@
 <mat-grid-list cols="5" rowHeight="600px">
     <mat-grid-tile [colspan]="4" [rowspan]="1">
         <div class="game-tile">
-            <mat-toolbar class="game-toolbar">
-                <p>SCORE</p>
-                <p class="score">{{p1Score}}</p>
-                <p>SCORE</p>
-                <p class="score">{{p2Score}}</p>
-            </mat-toolbar>
             <canvas #game id="canvas_1" width="1080" height="492" style="border: 1px solid black">
                 <!--<img class="invader" *ngFor="let invader of Enemies_1" src="../../assets/img/invader.png" height="30px" width="30px">-->
             </canvas>
