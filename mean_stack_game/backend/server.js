@@ -138,6 +138,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', function(){
         console.log('user disconnected');
+        numPlayers--
         new Event({
             type: "DISCONNECTION",
             date: Date.now(),
@@ -236,14 +237,18 @@ io.on('connection', (socket) => {
                 position = positionp1
                 io.emit("position", {position, oldposx, oldposy, playerNum});
                 break;
-            //case "appear":
-                //io.emit("position", {position, oldposx, oldposy}); //POSITIONS SPACESHIP AT LAS POSITION RECORDED
+            case "appear":
+                io.emit("position", {position, oldposx, oldposy, playerNum}); //POSITIONS SPACESHIP AT LAS POSITION RECORDED
                 break;
         }
     }); 
 
     socket.on("shoot", data=>{
-        io.emit("shoot",position);
+        console.log("player" + data)
+        if(data == 'p1') position = positionp1
+        if(data == 'p2') position = positionp2
+        var player = data
+        io.emit("shoot",{position, player});
     })
     
 });

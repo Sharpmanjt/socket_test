@@ -180,9 +180,14 @@ startTimer() {
     //***Player shoot methods */
 
     this.socket.on("shoot", data=>{
-        let laser = this.createLaserElement(data.x,data.y); 
-        this.context.drawImage(laser,data.x,data.y-15,35,40);
-        this.moveLaser(laser,data.x,data.y)
+        console.log(data.player)
+        if(data.player == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+        if(data.player == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
+        this.context = canvas.getContext("2d")
+        console.log(data.position       )
+        let laser = this.createLaserElement(data.position.x,data.position.y); 
+        this.context.drawImage(laser,data.position.x,data.position.y-15,35,40);
+        this.moveLaser(laser,data.position.x,data.position.y, data.player)
     })
   }
 
@@ -197,8 +202,11 @@ startTimer() {
     return new_laser;
 }
 
-public moveLaser(laser,x,y){
-    this.context = this.gameCanvas.nativeElement.getContext("2d");
+public moveLaser(laser,x,y, data){
+    console.log('data' + data)
+    if(data == 'p1') var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+    if(data == 'p2') var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
+    this.context = canvas.getContext("2d")
     let x_position = x
     let y_position = y
     let laserInterval = setInterval(()=>{
@@ -396,14 +404,16 @@ public destroyPlayer(x,y){
         case('ArrowLeft'):
                 return 'left';
         case 'p':
-            this.socket.emit("shoot", 'x')
+            var player = 'p2'
+            this.socket.emit("shoot", player)
             break;
         case('c'):
             return 'c';
         case('z'):
                 return 'z';
         case 'q':
-            this.socket.emit("shoot", 'q')
+            var player = 'p1'
+            this.socket.emit("shoot", player)
             break;
         default:
             return 'empty';
@@ -412,8 +422,15 @@ public destroyPlayer(x,y){
 
   public positionInvaders(){
     if(this.numPlayers!= 0){
+        //fix display issue canvas 1
+        var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
+        //var canvasString = "canvas_" + this.numPlayers
+        //var canvas = <HTMLCanvasElement> document.getElementById(canvasString);
+        this.context = canvas.getContext("2d")
+        this.context.clearRect(0, 0, 540, 492);
     //this.socket.emit("resetPosition");
     var enemies : Enemy[] = []
+    var nump = this.numPlayers
     if(this.numPlayers == 1) var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
     if(this.numPlayers == 2) var canvas = <HTMLCanvasElement> document.getElementById("canvas_2");
     console.log(this.numPlayers)
@@ -491,7 +508,8 @@ public destroyPlayer(x,y){
             
         }   
     });
-    this.Enemies_1 = enemies;
+    if(this.numPlayers == 1) this.Enemies_1 = enemies
+    if(this.numPlayers == 2) this.Enemies_2 = enemies
   }
   }
 }
