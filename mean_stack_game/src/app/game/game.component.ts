@@ -80,23 +80,23 @@ startTimer() {
   let counter = 0;
   this.interval = setInterval(() => {
     
-    /*disabling temporarily
     if(!this.gameOver){
     if(difficulty_number == 1){
-        this.invaderShoot();
+        this.invaderShoot(1);
+        this.invaderShoot(2);
     }
     else if(difficulty_number == 2){
         if(counter == 2){
-            this.invaderShoot();
+            this.invaderShoot(1);
             counter = 0;
         }
     }
     else if(difficulty_number == 3){
         if(counter == 3){
-            this.invaderShoot();
+            this.invaderShoot(1);
             counter = 0;
         }
-    }}*/
+    }}
       //stops timer after 0
 
     if(!this.gameOver){
@@ -136,6 +136,7 @@ startTimer() {
         this.player1.position_x = 230
         this.player1.position_y = 400
         this.numPlayers++
+        console.log(this.numPlayers)
         this.positionInvaders();
         this.startTimer();
     }
@@ -266,8 +267,9 @@ public moveLaser(laser,x,y, data){
 
 
   //*** Enemy Shoot methods */
-  public invaderShoot(){
+  public invaderShoot(player){
       console.log("Invader shoot");
+      var enemies
       let random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
       console.log(random);
       
@@ -275,9 +277,11 @@ public moveLaser(laser,x,y, data){
       /*while(this.Enemies_1[random] == undefined){
         random = Math.floor(Math.random() * (this.Enemies_1.length -1 - 0) + 0);
       }*/
-      if(this.Enemies_1[random] != undefined){
-          let pos_x = this.Enemies_1[random].position_x;
-          let pos_y = this.Enemies_1[random].position_y;
+      if(player == 1) enemies = this.Enemies_1
+      if(player ==2) enemies = this.Enemies_2
+      if(enemies != undefined){
+          let pos_x = enemies[random].position_x;
+          let pos_y = enemies[random].position_y;
           let laser = this.createInvaderLaserElement(pos_x,pos_y);
           this.context.drawImage(laser,pos_x,pos_y+20,35,40);
           this.moveInvaderLaser(laser, pos_x, pos_y+20);
