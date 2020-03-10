@@ -4,7 +4,7 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 
 var numPlayers = 0
-var gameTime = 180
+
 // models
 let History = require('./models/history');
 let Event = require('./models/event');
@@ -90,6 +90,8 @@ function handleError(res, reason, message, code) {
 /*** SOCKETS ***/
 var io = require("socket.io")(server);
 
+var gameTime = 180
+
 var position 
 var positionp1 = {
     x: 230,
@@ -147,7 +149,34 @@ io.on('connection', (socket) => {
     socket.on('disconnect', function(){
         console.log('user disconnected');
         numPlayers--
+        io.emit('numplayers', numPlayers)
         if(numPlayers < 0) numPlayers = 0
+        if(numPlayers == 0){
+            var gameTime = 180
+
+            var position 
+            var positionp1 = {
+                x: 230,
+                y: 400
+            };
+
+            var positionp2 = {
+                x: 770,
+                y: 400
+            }; 
+
+            var boundaryp1 = {
+                l: 5,
+                r: 500
+            }
+
+            var boundaryp2 = {
+                l: 585,
+                r: 1040
+            }
+            var enemies1 = [];
+            var enemies2 = [];
+        }
         new Event({
             type: "DISCONNECTION",
             date: Date.now(),
