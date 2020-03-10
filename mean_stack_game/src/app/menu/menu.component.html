@@ -6,7 +6,9 @@
                 <mat-label>USERNAME</mat-label>
                 <input matInput>
             </mat-form-field>
-            <button color="primary" id="playGame" mat-raised-button [routerLink]="['/playgame']">Play Game</button>
+            <!--<button color="primary" mat-raised-button [routerLink]="['/playgame']">Play Game</button>-->
+            <button color="primary" id="playGame" mat-raised-button (click)="playGame()">Play Game</button>
+            {{msg}}
         </span>
     </span>
     <span>
