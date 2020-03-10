@@ -33,6 +33,7 @@
             <canvas #game id="canvas_1" width="1080" height="492" style="border: 1px solid black">
                 <!--<img class="invader" *ngFor="let invader of Enemies_1" src="../../assets/img/invader.png" height="30px" width="30px">-->
             </canvas>
+            <div id="username_contain" [(ngModel)]="username" hidden></div>
         </div>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="1" [rowspan]="1">

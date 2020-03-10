@@ -1,8 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../service/api.service';
 import { History } from '../../model/history';
+import io from "socket.io-client";
 import { Event } from '../../model/event';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -15,6 +18,7 @@ export class MenuComponent implements OnInit {
   historyEntries: History[];
   historyDataSource: MatTableDataSource<History>;
   showHistory: boolean;
+  socket:any;
   @ViewChild('historyPaginator', {static: true}) historyPaginator: MatPaginator;
 
   eventColumns: string[] = ['type', 'date', 'time', 'user'];
@@ -24,11 +28,18 @@ export class MenuComponent implements OnInit {
   @ViewChild('eventPaginator', {read: MatPaginator, static: true}) eventPaginator: MatPaginator;
 
   showDashboard: boolean;
+  usernameForm:FormGroup;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private _formBuilder: FormBuilder,private router:Router) { 
+
+  }
 
   ngOnInit() {
+    this.socket = io("http://localhost:3000");
     this.showDashboard = true;
+    this.usernameForm = this._formBuilder.group({
+      username: new FormControl('')
+    })
   }
 
   openDashboard(){
@@ -67,5 +78,14 @@ export class MenuComponent implements OnInit {
       this.eventDataSource.paginator = this.eventPaginator;
     })
     return this.eventLogs;
+  }
+
+  playGame(){
+    let user = 'Anonymous';
+    if(this.usernameForm.controls['username'].value != ''){
+      this.socket.emit("set_username",this.usernameForm.controls['username'].value)
+    }
+    //localStorage.setItem("User_1",this.usernameForm.controls['username'].value);
+    this.router.navigate(['/playgame']);
   }
 }

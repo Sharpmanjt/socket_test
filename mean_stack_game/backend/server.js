@@ -114,6 +114,8 @@ var enemies1 = [];
 var enemies2 = [];
 var oldposx
 var oldposy
+var username = 'Anonymous'
+var users = [];
 //GET POSITION FROM HERE THIS FILE 
 
 
@@ -122,12 +124,22 @@ io.on('connection', (socket) => {
     /*** GENERAL ***/
     // default username
 
+    socket.on('set_username', (data) => {
+        console.log("set_username in server.js: "+data);
+        users.push(data);
+        //io.sockets.emit('set_user',data);
+        socket.emit('userSet',{username:data});
+        
+    })
+   io.emit("getUsername");
+
     if(gameTime < 180) gameTime = 180
 
-    socket.username = "Anonymous";
+
+    socket.username = username;
     //position.x = 230;
     //position.y = 400;
-    console.log('new user connected');
+    console.log(socket.username+' connected');
     
     new Event({
         type: "CONNECTION",
@@ -153,11 +165,12 @@ io.on('connection', (socket) => {
             time: Date.now(),
             user: socket.username
         }).save();
+        username = 'Anonymous';
     });
 
     socket.on('invaders1_pos', (data)=>{
-        console.log("setting enemies1")
-        console.log(JSON.stringify(data));
+        /*console.log("setting enemies1")
+        console.log(JSON.stringify(data));*/
         if(enemies1.length == 0){
             enemies1 = data;
         }
@@ -166,8 +179,8 @@ io.on('connection', (socket) => {
         //io.emit("invaders_p1",enemies1);
     })
     socket.on('invaders2_pos', (data)=>{
-        console.log("setting enemies2")
-        console.log(JSON.stringify(data));
+        /*console.log("setting enemies2")
+        console.log(JSON.stringify(data));*/
         if(enemies2.length == 0){
             enemies2 = data;
         }
@@ -201,11 +214,15 @@ io.on('connection', (socket) => {
     /*** CHAT ***/
     // listen on change_username
     socket.on('change_username', (data) => {
-        socket.username = data.username
+        console.log("Username called "+data);
+        username = data
     })
+
     // listen on new_message
     socket.on('new_message', (data) => {
-        io.sockets.emit('new_message', { message: data.message, username: socket.username });
+        socket.emit('get_user');
+        console.log("new_message on server.js: "+username);
+        io.sockets.emit('new_message', { message: data.message, username: username });
         new History({
             player: socket.username,
             opponent: "player2",
@@ -213,6 +230,13 @@ io.on('connection', (socket) => {
             time: Date.now(),
             message: data.message
         }).save();
+    })
+
+    socket.on('get_user',()=>{
+        io.emit('get_user');
+    })
+    socket.on('set_user',(user)=>{
+        username = user;
     })
     // listen on typing
     // socket.on('typing', (data) => {

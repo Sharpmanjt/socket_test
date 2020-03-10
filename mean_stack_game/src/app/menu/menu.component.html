@@ -2,11 +2,11 @@
     <button mat-raised-button (click)="openDashboard()">Dashboard</button>
     <span>
         <span class="username-button">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" [formGroup]="usernameForm">
                 <mat-label>USERNAME</mat-label>
-                <input matInput>
+                <input matInput class="username" formControlName="username">
             </mat-form-field>
-            <button color="primary" mat-raised-button [routerLink]="['/playgame']">Play Game</button>
+            <button color="primary" mat-raised-button (click)="playGame()">Play Game</button> <!--[routerLink]="['/playgame']"-->
         </span>
     </span>
     <span>

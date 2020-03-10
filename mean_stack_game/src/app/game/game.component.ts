@@ -52,6 +52,7 @@ export class GameComponent implements OnInit {
     private numPlayers: number = 0
     private Enemies_1 : Enemy[] = [] //Enemies at the left screen
     private Enemies_2 : Enemy[] = [] //Enemies at the right screen
+    private username = '';
 
     constructor(){
     }
@@ -197,6 +198,13 @@ startTimer() {
         for(let invader in data){
             this.drawEnemy(data[invader]["position_x"],data[invader]["position_y"]);
         }
+    })
+    this.socket.on("userSet",(data)=>{
+        console.log("userSet in game.component: "+data.username);
+        this.username = data.username;
+    })
+    this.socket.on('get_user',()=>{
+        this.socket.emit("set_user",this.username);
     })
     //***Player shoot methods */
 

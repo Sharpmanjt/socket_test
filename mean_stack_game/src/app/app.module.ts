@@ -9,6 +9,7 @@ import { GameComponent } from './game/game.component';
 import { ChatComponent } from './chat/chat.component';
 import { HttpModule } from '@angular/http';
 import { CookieModule } from 'ngx-cookie';
+import { ReactiveFormsModule, FormsModule} from '@angular/forms';
 
 import { 
   MatToolbarModule,
@@ -43,7 +44,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     MatInputModule,
     MatFormFieldModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   exports: [
     MatToolbarModule,
