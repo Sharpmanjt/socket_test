@@ -128,6 +128,7 @@ io.on('connection', (socket) => {
     //position.y = 400;
     console.log('new user connected');
     
+    
     new Event({
         type: "CONNECTION",
         date: Date.now(),
@@ -154,6 +155,9 @@ io.on('connection', (socket) => {
         }).save();
     });
 
+    socket.on('checkNumPlayers', ()=>{
+        io.emit('numplayers', numPlayers)
+    })
 
     socket.on('checkPlayers', () =>{
         numPlayers++

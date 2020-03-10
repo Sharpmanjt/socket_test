@@ -1,8 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import io from "socket.io-client";
 import { ApiService } from '../service/api.service';
 import { History } from '../../model/history';
 import { Event } from '../../model/event';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { CommonModule } from '@angular/common';  
+import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -15,6 +19,9 @@ export class MenuComponent implements OnInit {
   historyEntries: History[];
   historyDataSource: MatTableDataSource<History>;
   showHistory: boolean;
+  numPlayers: number;
+  joinable: boolean;
+  private socket: any;
   @ViewChild('historyPaginator', {static: true}) historyPaginator: MatPaginator;
 
   eventColumns: string[] = ['type', 'date', 'time', 'user'];
@@ -25,10 +32,27 @@ export class MenuComponent implements OnInit {
 
   showDashboard: boolean;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService,  private router: Router,) { }
 
   ngOnInit() {
     this.showDashboard = true;
+    this.socket = io("http://localhost:3000");
+    this.socket.emit("checkNumPlayers")
+  }
+
+  ngAfterViewInit(){
+
+    this.socket.on('numplayers', data =>{
+      console.log('pulling')
+      this.numPlayers = data
+      if(this.numPlayers >= 2){
+        this.joinable = false
+      }
+      else{
+        this.joinable = true
+      }
+    })
+
   }
 
   openDashboard(){
@@ -51,6 +75,16 @@ export class MenuComponent implements OnInit {
       this.historyDataSource.paginator = this.historyPaginator;
     })
     return this.historyEntries;
+  }
+
+  playGame(){
+    console.log(this.numPlayers)
+    if(this.numPlayers >= 2){
+      this.router.navigate([''])
+    }
+    else{
+      this.router.navigate(['/playgame'])
+    }
   }
 
   getEventLog() {
