@@ -52,6 +52,13 @@ button {
     width: 100%;
 }
 
+#room {
+    overflow-y: auto;
+    height: 480px;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 #message {
     width: 75%;
     margin: 1.5px;
