@@ -37,8 +37,6 @@ $(function() {
         room.append("<p class='player-action'><i>" + data.username + " has left the game...</i></p>");
     })
 
-
-
     send_username.click(function(){
         // console.log(username.val())
         socket.emit('change_username', { username: username.val() })

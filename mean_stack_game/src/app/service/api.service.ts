@@ -6,6 +6,7 @@ import { Http, Response } from '@angular/http';
 import { History } from '../../model/history';
 import { Event } from '../../model/event';
 import { User } from '../../model/user';
+import { Game } from '../../model/game';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,13 @@ export class ApiService {
                .toPromise()
                .then(response => response.json() as Event[])
                .catch(this.handleError);        
+  }
+
+  getGameHistory(): Promise<void | Game[]> {
+    return this.http.get(`${this.baseUri}/games`)
+               .toPromise()
+               .then(response => response.json() as Game[])
+               .catch(this.handleError); 
   }
 
   getTopScores(): Promise<void | User[]> {

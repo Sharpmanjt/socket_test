@@ -1,9 +1,12 @@
-<mat-toolbar class="time-bar">
-    <p>TIMER:</p>
-    <p class="time">{{time}}</p>
-    <p>{{message}}</p>
-</mat-toolbar>
-
+<span class="header">
+    <button color="primary" id="leaveGame" mat-raised-button (click)="leaveGame()">Leave Game</button>
+    <mat-toolbar class="time-bar">
+        <p>TIMER:</p>
+        <p class="time">{{time}}</p>
+        <p>{{message}}</p>
+    </mat-toolbar>
+    <button class="hidden"></button>
+</span>
 <mat-grid-list cols="5" rowHeight="580px">
     <mat-grid-tile [colspan]="4" [rowspan]="1">
         <div class="game-tile">

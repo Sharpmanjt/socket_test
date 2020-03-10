@@ -62,6 +62,16 @@ app.get("/api/eventlog", function(req, res) {
     });
 });
 
+app.get("/api/games", function(req, res) {
+    Game.find({}, function(err, docs) {
+        if (err) {
+          handleError(res, err.message, "Failed to get history.");
+        } else {
+          res.status(200).json(docs);
+        }
+    });
+});
+
 app.get("/api/topscores", function(req, res) {
     User.find({}, function(err, docs) {
         if (err) {

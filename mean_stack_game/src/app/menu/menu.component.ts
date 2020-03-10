@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import { ApiService } from '../service/api.service';
 import { History } from '../../model/history';
 import { Event } from '../../model/event';
+import { Game } from '../../model/game';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { CommonModule } from '@angular/common';  
 import { BrowserModule } from '@angular/platform-browser';
@@ -15,14 +16,15 @@ import { ActivatedRoute, Router } from '@angular/router';
   providers: [ApiService]
 })
 export class MenuComponent implements OnInit {
-  historyColumns: string[] = ['player', 'opponent', 'date', 'time', 'message'];
-  historyEntries: History[];
-  historyDataSource: MatTableDataSource<History>;
-  showHistory: boolean;
   numPlayers: number;
   joinable: boolean;
   msg: string;
   private socket: any;
+
+  historyColumns: string[] = ['player', 'opponent', 'date', 'time', 'message'];
+  historyEntries: History[];
+  historyDataSource: MatTableDataSource<History>;
+  showHistory: boolean;
   @ViewChild('historyPaginator', {static: true}) historyPaginator: MatPaginator;
 
   eventColumns: string[] = ['type', 'date', 'time', 'user'];
@@ -30,6 +32,12 @@ export class MenuComponent implements OnInit {
   eventDataSource: MatTableDataSource<Event>;
   showEvents: boolean;
   @ViewChild('eventPaginator', {read: MatPaginator, static: true}) eventPaginator: MatPaginator;
+
+  gameColumns: string[] = ['player1', 'player2', 'winner', 'scorePlayer1', 'scorePlayer2'];
+  gameEntries: Game[];
+  gameDataSource: MatTableDataSource<Game>;
+  showGames: boolean;
+  @ViewChild('gamePaginator', {static: true}) gamePaginator: MatPaginator;
 
   showDashboard: boolean;
 
@@ -62,12 +70,14 @@ export class MenuComponent implements OnInit {
     this.showDashboard = true;
     this.showHistory = false;
     this.showEvents = false;
+    this.showGames = false;
   }
 
   getChatHistory() {
     this.showHistory = true;
     this.showEvents = false;
     this.showDashboard = false;
+    this.showGames = false;
     this.apiService
     .getHistory()
     .then((historyEntries: History[]) => {
@@ -94,6 +104,7 @@ export class MenuComponent implements OnInit {
     this.showHistory = false;
     this.showEvents = true;
     this.showDashboard = false;
+    this.showGames = false;
     this.apiService
     .getEventLog()
     .then((eventLogs: Event[]) => {
@@ -104,5 +115,22 @@ export class MenuComponent implements OnInit {
       this.eventDataSource.paginator = this.eventPaginator;
     })
     return this.eventLogs;
+  }
+
+  getGameHistory() {
+    this.showHistory = false;
+    this.showEvents = false;
+    this.showDashboard = false;
+    this.showGames = true;
+    this.apiService
+    .getGameHistory()
+    .then((gameEntries: Game[]) => {
+      this.gameEntries = gameEntries.map((gameEntry) => {
+        return gameEntry;
+      })
+      this.gameDataSource = new MatTableDataSource(gameEntries);
+      this.gameDataSource.paginator = this.gamePaginator;
+    })
+    return this.gameEntries;
   }
 }

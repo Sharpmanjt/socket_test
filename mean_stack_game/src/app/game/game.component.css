@@ -49,9 +49,21 @@ mat-grid-list {
     justify-content: space-between;
 }
 
-/* .score-bar-div {
-    margin: auto;
-} */
+.hidden {
+    visibility: hidden;
+}
+
+#leaveGame {
+    height: 50%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 50px;
+    padding-right: 50px;
+    align-items: center;
+}
 
 .score, .time{
     color: red;

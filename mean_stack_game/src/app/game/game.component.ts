@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import { HostListener } from '@angular/core';
 import { Enemy } from '../classes/Enemy';
 import {Player} from '../classes/Player';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
     trigger,
     state,
@@ -56,7 +57,7 @@ export class GameComponent implements OnInit {
     private Enemies_1 : Enemy[] = [] //Enemies at the left screen
     private Enemies_2 : Enemy[] = [] //Enemies at the right screen
 
-    constructor(){
+    constructor(private router: Router){
     }
 
 interval;
@@ -595,12 +596,13 @@ public destroyPlayer(x,y){
           
     });
 
-         this.Enemies_1 = enemies
-         this.Enemies_2 = enemies2
-    
+    this.Enemies_1 = enemies
+    this.Enemies_2 = enemies2 
+    }
   }
 
-
+  leaveGame() {
+    this.router.navigate(['/menu']);
   }
   
 }
