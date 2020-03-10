@@ -12,6 +12,7 @@ import {
     // ...
   } from '@angular/animations';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { JsonpModule } from '@angular/http';
 @Component({
     selector: 'app-game',
     templateUrl: './game.component.html',
@@ -47,6 +48,7 @@ export class GameComponent implements OnInit {
     private player1: Player;
     private player2: Player;
     private message: String = " "
+    called: Boolean = false;
     private numPlayers: number = 0
     private Enemies_1 : Enemy[] = [] //Enemies at the left screen
     private Enemies_2 : Enemy[] = [] //Enemies at the right screen
@@ -139,6 +141,7 @@ startTimer() {
     }*/
 
     public ngOnInit() {
+        
         this.socket = io("http://localhost:3000");
 
         this.socket.emit("checkPlayers")
@@ -149,6 +152,8 @@ startTimer() {
         this.numPlayers++
         console.log(this.numPlayers)
         this.positionInvaders();
+        //this.getInvadersPosition();
+        this.called = true;
         this.placeSeparator();
         this.startTimer();
     }
@@ -181,6 +186,18 @@ startTimer() {
     this.socket.on('timerDown', data =>{
         this.time = data
     })
+
+    /*Position invaders*/
+    this.socket.on("invaders_p1", data=>{
+        for(let invader in data){
+            this.drawEnemy(data[invader]["position_x"],data[invader]["position_y"]);
+        }
+    })
+    this.socket.on("invaders_p2", data=>{
+        for(let invader in data){
+            this.drawEnemy(data[invader]["position_x"],data[invader]["position_y"]);
+        }
+    })
     //***Player shoot methods */
 
     this.socket.on("shoot", data=>{
@@ -189,6 +206,11 @@ startTimer() {
         this.context.drawImage(laser,data.position.x,data.position.y-15,35,40);
         this.moveLaser(laser,data.position.x,data.position.y, data.player)
     })
+  }
+
+  public getInvadersPosition(){
+      this.socket.emit("geti1_pos");
+      this.socket.emit("geti2_pos");
   }
 
   public createLaserElement(x,y){ // LOADS LASER IMAGE
@@ -203,7 +225,6 @@ startTimer() {
 }
 
 public placeSeparator(){
-    console.log("Separator")
     var canvas = <HTMLCanvasElement> document.getElementById("canvas_1");
     var ctx = canvas.getContext("2d");
     ctx.beginPath();
@@ -300,12 +321,11 @@ public moveLaser(laser,x,y, data){
 
   //*** Enemy Shoot methods */
   public invaderShoot(player){
-      console.log("Invader shoot");
       var enemies
       if(player == 1) enemies = this.Enemies_1
       if(player ==2) enemies = this.Enemies_2
-      console.log(player)
-      console.log(enemies)
+      //console.log(player)
+      //console.log(enemies)
       if(enemies != undefined){
         let random = Math.floor(Math.random() * (enemies.length) + 0);
           let pos_x = enemies[random].position_x;
@@ -329,6 +349,7 @@ public moveLaser(laser,x,y, data){
   }
 
   public moveInvaderLaser(laser,x,y){
+    
       this.context = this.gameCanvas.nativeElement.getContext("2d");
       let x_position = x;
       let y_position = y;
@@ -446,6 +467,7 @@ public destroyPlayer(x,y){
         this.context = canvas.getContext("2d")
         this.context.clearRect(0, 0, 540, 492);
     //this.socket.emit("resetPosition");
+    var socket = this.socket;
     var enemies : Enemy[] = []
     var enemies2: Enemy[] = []
     var ctx = canvas.getContext("2d");
@@ -472,7 +494,7 @@ public destroyPlayer(x,y){
         let stop = false;
         //let rows = 1;
         var row;
-        let pos_y = 5;
+        let pos_y = Math.floor(Math.random() * Math.floor(70));
         let pos_x = 50;
         var j = 0
         for(var i= 0; i < images.length; i++){
@@ -489,15 +511,18 @@ public destroyPlayer(x,y){
             }
             let invader = new Enemy();
             invader.position_x = pos_x;
+            invader.position_y = pos_y;
             enemies.push(invader);
             var img = images[i];
+            //this.socket.emit("invaders1_pos", enemies );
 
-            row = Math.floor(Math.random() * 3)
+            /*row = Math.floor(Math.random() * 3)
             invader.position_y = pos_y + (row * 65)
             console.log("x:" + invader.position_x + " y: " + invader.position_y)
-            ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);
+            ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);*/
             console.log()
             pos_x+=88;
+            pos_y = Math.floor(Math.random() * Math.floor(70));
             
         } 
             let space_img = document.createElement("img");
@@ -522,18 +547,22 @@ public destroyPlayer(x,y){
                 }
                 let invader = new Enemy();
                 invader.position_x = pos_x;
+                invader.position_y = Math.floor(Math.random() * Math.floor(70));;
                 enemies2.push(invader);
                 var img = images[i];
+
     
-                row = Math.floor(Math.random() * 3)
+                /*row = Math.floor(Math.random() * 3)
                 invader.position_y = pos_y + (row * 65)
                 console.log("x:" + invader.position_x + " y: " + invader.position_y)
-                ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);
+                ctx.drawImage(img, invader.position_x, invader.position_y, 35,40);*/
                 console.log()
                 pos_x+=88;
+                pos_y =Math.floor(Math.random() * Math.floor(10));
                 
             } 
-                
+            
+                socket.emit("invaders2_pos",enemies2);
                 space_img = document.createElement("img");
                 space_img.src = "../../assets/img/spaceship.png";
                 space_img.id = "spacecraft";
@@ -541,12 +570,18 @@ public destroyPlayer(x,y){
                 ctx.drawImage(space_img, 770, 400, 35, 40); 
             
         }}
+        socket.emit("invaders1_pos",enemies);
+    
+        //this.socket.emit("invaders2_pos", enemies2);
           
     });
+
          this.Enemies_1 = enemies
          this.Enemies_2 = enemies2
-
     
   }
+
+
   }
+  
 }
