@@ -40,6 +40,7 @@ export class GameComponent implements OnInit {
     private gameCanvas: ElementRef;
     private p1Score: number = 0;
     private p2Score: number = 0;
+    private recordCount = 0
     private game_recorded: boolean = false
     private p1name: String = "Sam"
     private p2name: String = "Bob"
@@ -81,15 +82,17 @@ gameEnd(player){
             
                 player = 0}
         }
-        var winner = player
+        this.recordCount++
+        if(this.recordCount >= 2){
+            var winner = player
         var p1name = this.p1name
         var p2name = this.p2name
         var p1score = this.p1Score
         var p2score = this.p2Score
         this.socket.emit('record', {winner, p1name, p2name, p1score, p2score })
         this.game_recorded = true
-    }
-        
+        }
+    }    
 }
 
 startTimer() {
