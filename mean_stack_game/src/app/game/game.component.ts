@@ -39,6 +39,9 @@ export class GameComponent implements OnInit {
     private gameCanvas: ElementRef;
     private p1Score: number = 0;
     private p2Score: number = 0;
+    private game_recorded: boolean = false
+    private p1name: String = "Sam"
+    private p2name: String = "Bob"
     private time: number = 180;
     private context: any;
     private socket: any;
@@ -59,16 +62,32 @@ export class GameComponent implements OnInit {
 interval;
 
 gameEnd(player){
+        if(!this.game_recorded){
         this.gameOver = true
         if(this.playerDeath){
             if(player == 1) this.message = "Player 2 wins!"
             if(player == 2) this.message = "Player 1 wins!"
         }
         else{
-            if(this.p1Score > this.p2Score) this.message= "Player 1 wins!"
-            else if(this.p2Score > this.p1Score) this.message = "Player 2 wins!"
-            else this.message = "It's a draw!"
+            if(this.p1Score > this.p2Score){
+                 this.message= "Player 1 wins!"
+                 player = 1}
+            else if(this.p2Score > this.p1Score) {
+                this.message = "Player 2 wins!"
+                player = 2}
+            else {
+                this.message = "It's a draw!"
+            
+                player = 0}
         }
+        var winner = player
+        var p1name = this.p1name
+        var p2name = this.p2name
+        var p1score = this.p1Score
+        var p2score = this.p2Score
+        this.socket.emit('record', {winner, p1name, p2name, p1score, p2score })
+        this.game_recorded = true
+    }
         
 }
 

@@ -152,30 +152,29 @@ io.on('connection', (socket) => {
         io.emit('numplayers', numPlayers)
         if(numPlayers < 0) numPlayers = 0
         if(numPlayers == 0){
-            var gameTime = 180
+            gameTime = 180
 
-            var position 
-            var positionp1 = {
+            positionp1 = {
                 x: 230,
                 y: 400
             };
 
-            var positionp2 = {
+            positionp2 = {
                 x: 770,
                 y: 400
             }; 
 
-            var boundaryp1 = {
+            boundaryp1 = {
                 l: 5,
                 r: 500
             }
 
-            var boundaryp2 = {
+            boundaryp2 = {
                 l: 585,
                 r: 1040
             }
-            var enemies1 = [];
-            var enemies2 = [];
+            enemies1 = [];
+            enemies2 = [];
         }
         new Event({
             type: "DISCONNECTION",
@@ -235,6 +234,20 @@ io.on('connection', (socket) => {
     // listen on change_username
     socket.on('change_username', (data) => {
         socket.username = data.username
+    })
+
+    socket.on('record', (data) =>{
+        new Game({
+            player1: data.p1name,
+            player2: data.p2name, 
+            winner: data.winner,
+            scorePlayer1: data.p1score,
+            scorePlayer2: data.p2score
+        }).save();
+
+        
+
+        console.log('game recorded')
     })
     // listen on new_message
     socket.on('new_message', (data) => {

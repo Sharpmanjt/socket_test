@@ -21,6 +21,7 @@ export class MenuComponent implements OnInit {
   showHistory: boolean;
   numPlayers: number;
   joinable: boolean;
+  msg: string;
   private socket: any;
   @ViewChild('historyPaginator', {static: true}) historyPaginator: MatPaginator;
 
@@ -47,9 +48,11 @@ export class MenuComponent implements OnInit {
       this.numPlayers = data
       if(this.numPlayers >= 2){
         this.joinable = false
+        this.msg = "No game available!"
       }
       else{
         this.joinable = true
+        this.msg = ""
       }
     })
 
