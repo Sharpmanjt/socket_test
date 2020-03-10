@@ -34,7 +34,7 @@ button {
     padding: 0px;
     margin-top: 20px;
     width: 300px;
-    height: 532px;
+    height: 558px;
     left: 0;
     /* position: relative; */
 }
@@ -73,6 +73,10 @@ button {
 
 p {
     padding-left: 5px;
+}
+
+.player-action {
+    color: white;
 }
 
 

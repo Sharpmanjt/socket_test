@@ -9,10 +9,10 @@ let historySchema = new Schema({
         type: String
     },
     date: {
-        type: Date
+        type: String
     },
     time: {
-        type: Date
+        type: String
     },
     message: {
         type: String

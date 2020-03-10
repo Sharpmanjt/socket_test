@@ -119,23 +119,18 @@ var oldposy
 //GET POSITION FROM HERE THIS FILE 
 
 
-
 io.on('connection', (socket) => {
     /*** GENERAL ***/
     // default username
-
-    if(gameTime < 180) gameTime = 180
-
     socket.username = "Anonymous";
-    //position.x = 230;
-    //position.y = 400;
-    console.log('new user connected');
+
+    if(gameTime < 180) gameTime = 180 
     
     
     new Event({
         type: "CONNECTION",
-        date: Date.now(),
-        time: Date.now(),
+        date: getCurrentDate(),
+        time: getCurrentTime(),
         user: socket.username
     }).save();  
     
@@ -147,7 +142,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', function(){
-        console.log('user disconnected');
+        io.sockets.emit('player_left', { username: "Anonymous"});
         numPlayers--
         io.emit('numplayers', numPlayers)
         if(numPlayers < 0) numPlayers = 0
@@ -179,8 +174,8 @@ io.on('connection', (socket) => {
         }
         new Event({
             type: "DISCONNECTION",
-            date: Date.now(),
-            time: Date.now(),
+            date: getCurrentDate(),
+            time: getCurrentTime(),
             user: socket.username
         }).save();
     });
@@ -213,6 +208,25 @@ io.on('connection', (socket) => {
     socket.on("geti2_pos", ()=>{
         io.emit("invaders_p2",enemies2);
     })*/
+    socket.on('player_join', (data) => {
+        io.sockets.emit('player_join', { username: "Anonymous"});
+        new Event({
+            type: "JOINED GAME",
+            date: getCurrentDate(),
+            time: getCurrentTime(),
+            user: socket.username
+        }).save();
+    })
+
+    socket.on('player_left', (data) => {
+        io.sockets.emit('player_left', { username: "Anonymous"});
+        new Event({
+            type: "LEFT GAME",
+            date: getCurrentDate(),
+            time: getCurrentTime(),
+            user: socket.username
+        }).save();
+    })
 
     socket.on('checkPlayers', () =>{
         numPlayers++
@@ -228,7 +242,6 @@ io.on('connection', (socket) => {
             console.log(numPlayers)
             io.emit("player_join", {numPlayers, positionp2, boundaryp2})
         }
-        
     });
 
     /*** CHAT ***/
@@ -242,22 +255,13 @@ io.on('connection', (socket) => {
         new History({
             player: socket.username,
             opponent: "player2",
-            date: Date.now(),
-            time: Date.now(),
+            date: getCurrentDate(),
+            time: getCurrentTime(),
             message: data.message
         }).save();
     })
-    // listen on typing
-    // socket.on('typing', (data) => {
-    //     socket.broadcast.emit('typing', { username: socket.username })
-    // })
 
     /*** GAME ***/
-    /*socket.on("resetPosition", ()=>{
-        position.x =0;
-        position.y = 0;
-    })*/
-    //socket.emit("position", {position, oldposx, oldposy});
     socket.on("move", data => {
         var playerNum
         switch(data) {
@@ -313,6 +317,13 @@ io.on('connection', (socket) => {
         if(data == 'p2') position = positionp2
         var player = data
         io.emit("shoot",{position, player});
-    })
-    
+    })   
 });
+
+function getCurrentDate(){
+    return new Date(Date.now()).toLocaleDateString();
+}
+
+function getCurrentTime(){
+    return new Date(Date.now()).toLocaleTimeString();
+}
