@@ -83,7 +83,7 @@ export class MenuComponent implements OnInit {
   playGame(){
     let user = 'Anonymous';
     if(this.usernameForm.controls['username'].value != ''){
-      this.socket.emit("set_username",this.usernameForm.controls['username'].value)
+      this.socket.emit("set_username",this.usernameForm.controls['username'].value);
     }
     //localStorage.setItem("User_1",this.usernameForm.controls['username'].value);
     this.router.navigate(['/playgame']);

@@ -126,17 +126,24 @@ io.on('connection', (socket) => {
 
     socket.on('set_username', (data) => {
         console.log("set_username in server.js: "+data);
+        socket.username = data;
+        console.log("socket.ussername: "+socket.username);
         users.push(data);
-        //io.sockets.emit('set_user',data);
-        socket.emit('userSet',{username:data});
-        
-    })
+        //updateUsernames();
+        io.sockets.emit('set_user',data);
+        //socket.emit('userSet',{username:data});
+        })
+    
+    function updateUsernames(){
+        io.sockets.emit("get users", users);
+    }
+
    io.emit("getUsername");
 
     if(gameTime < 180) gameTime = 180
 
 
-    socket.username = username;
+    //socket.username = username;
     //position.x = 230;
     //position.y = 400;
     console.log(socket.username+' connected');
@@ -156,7 +163,9 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', function(){
-        console.log('user disconnected');
+        console.log(socket.username+' disconnected');
+        users.splice(users.indexOf(socket.username),1);
+        updateUsernames();
         numPlayers--
         if(numPlayers < 0) numPlayers = 0
         new Event({
@@ -221,8 +230,8 @@ io.on('connection', (socket) => {
     // listen on new_message
     socket.on('new_message', (data) => {
         socket.emit('get_user');
-        console.log("new_message on server.js: "+username);
-        io.sockets.emit('new_message', { message: data.message, username: username });
+        console.log("new_message on server.js: "+socket.username);
+        io.sockets.emit('new_message', { message: data.message, username: socket.username });
         new History({
             player: socket.username,
             opponent: "player2",
